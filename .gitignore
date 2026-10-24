@@ -1,0 +1,20 @@
+# R session & history files
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Ruserdata
+
+# RStudio project configuration
+.Rproj.user/
+
+# Windows / OS thumbnails & cache
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Large Generated SQLite Database (Rebuilt on pipeline execution)
+*.sqlite
+*.sqlite-journal
+

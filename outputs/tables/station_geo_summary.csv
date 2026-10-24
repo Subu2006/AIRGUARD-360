@@ -1,0 +1,111 @@
+"StationId","StationName","City","State","Latitude","Longitude","Status","Total_Observations","Valid_AQI_Days","Mean_AQI","Peak_AQI","Mean_PM25","Mean_PM10"
+"AP001","Secretariat, Amaravati - APPCB","Amaravati","Andhra Pradesh",16.5150833,80.5181667,"Active",951,841,95.3,312,37.8,76.4
+"AP005","GVM Corporation, Visakhapatnam - APPCB","Visakhapatnam","Andhra Pradesh",17.72,83.3,"Active",1462,1171,117.3,387,47,106
+"AS001","Railway Colony, Guwahati - APCB","Guwahati","Assam",26.181742,91.78063,"Active",502,495,140.1,956,63.7,116.6
+"BR005","DRM Office Danapur, Patna - BSPCB","Patna","Bihar",25.586562,85.043586,"Active",126,75,126.9,320,53.1,107.4
+"BR006","Govt. High School Shikarpur, Patna - BSPCB","Patna","Bihar",25.592539,85.227158,"Active",121,112,137.1,634,43.5,149.3
+"BR007","IGSC Planetarium Complex, Patna - BSPCB","Patna","Bihar",25.610369,85.132568,"Active",1858,1377,251.1,619,131.1,NA
+"BR008","Muradpur, Patna - BSPCB","Patna","Bihar",25.619651,85.147382,"Active",191,182,126.2,334,51.8,128.6
+"BR009","Rajbansi Nagar, Patna - BSPCB","Patna","Bihar",25.599486,85.113666,"Active",191,187,135.8,318,49.8,109.4
+"BR010","Samanpura, Patna - BSPCB","Patna","Bihar",25.596727,85.085624,"Active",191,188,204,377,68.3,118.2
+"CH001","Sector-25, Chandigarh - CPCC","Chandigarh","Chandigarh",30.751462,76.762879,"Active",304,299,96.5,335,41.1,85.7
+"DL001","Alipur, Delhi - DPCC","Delhi","Delhi",28.815329,77.15301,"Active",599,584,217.8,692,107.1,198.8
+"DL002","Anand Vihar, Delhi - DPCC","Delhi","Delhi",28.647622,77.315809,"Active",1916,1583,355.8,927,153.4,358.5
+"DL003","Ashok Vihar, Delhi - DPCC","Delhi","Delhi",28.695381,77.181665,"Active",882,877,238.4,721,113.4,225.7
+"DL004","Aya Nagar, Delhi - IMD","Delhi","Delhi",28.4706914,77.1099364,"Active",1029,969,192.5,697,89.1,172.8
+"DL005","Bawana, Delhi - DPCC","Delhi","Delhi",28.7762,77.051074,"Active",729,724,252.6,738,121.2,236.1
+"DL006","Burari Crossing, Delhi - IMD","Delhi","Delhi",28.7256504,77.2011573,"Inactive",854,699,232,698,120.6,195.5
+"DL007","CRRI Mathura Road, Delhi - IMD","Delhi","Delhi",28.5512005,77.2735737,"Active",2009,1177,248.2,760,117.6,224.4
+"DL008","DTU, Delhi - CPCB","Delhi","Delhi",28.7500499,77.1112615,"Active",2009,908,258,1019,131.4,235.5
+"DL009","Dr. Karni Singh Shooting Range, Delhi - DPCC","Delhi","Delhi",28.498571,77.26484,"Active",882,875,204.6,673,83.2,185.4
+"DL010","Dwarka-Sector 8, Delhi - DPCC","Delhi","Delhi",28.5710274,77.0719006,"Active",882,878,260.6,741,103.4,276.6
+"DL011","East Arjun Nagar, Delhi - CPCB","Delhi","Delhi",28.646,77.279,"Active",1553,0,NA,NA,NA,NA
+"DL012","IGI Airport (T3), Delhi - IMD","Delhi","Delhi",28.5627763,77.1180053,"Active",1036,967,203.5,738,91.7,193.6
+"DL013","IHBAS, Dilshad Garden, Delhi - CPCB","Delhi","Delhi",28.6811736,77.3025234,"Active",2009,1252,226,568,107.7,NA
+"DL014","ITO, Delhi - CPCB","Delhi","Delhi",28.628624,77.24106,"Active",2007,909,230.7,628,119.3,191.1
+"DL015","Jahangirpuri, Delhi - DPCC","Delhi","Delhi",28.73282,77.170633,"Active",882,874,260.9,790,128.2,260.1
+"DL016","Jawaharlal Nehru Stadium, Delhi - DPCC","Delhi","Delhi",28.58028,77.233829,"Active",882,875,218.9,720,97.5,209.6
+"DL017","Lodhi Road, Delhi - IMD","Delhi","Delhi",28.5918245,77.2273074,"Active",1029,949,199.2,786,91.3,181.3
+"DL018","Major Dhyan Chand National Stadium, Delhi - DPCC","Delhi","Delhi",28.611281,77.237738,"Active",882,878,208.8,764,92.8,204.3
+"DL019","Mandir Marg, Delhi - DPCC","Delhi","Delhi",28.636429,77.201067,"Active",1911,1379,221.2,734,102.8,197.1
+"DL020","Mundka, Delhi - DPCC","Delhi","Delhi",28.684678,77.076574,"Active",730,716,269.1,786,122.5,269.1
+"DL021","NSIT Dwarka, Delhi - CPCB","Delhi","Delhi",28.60909,77.0325413,"Active",2009,1557,246.4,609,116.1,NA
+"DL022","Najafgarh, Delhi - DPCC","Delhi","Delhi",28.570173,76.933762,"Active",882,857,204.1,676,86.4,171.7
+"DL023","Narela, Delhi - DPCC","Delhi","Delhi",28.822836,77.101981,"Active",882,858,237.6,758,110,234.6
+"DL024","Nehru Nagar, Delhi - DPCC","Delhi","Delhi",28.56789,77.250515,"Active",882,879,237,722,116.8,216.5
+"DL025","North Campus, DU, Delhi - IMD","Delhi","Delhi",28.6573814,77.1585447,"Active",1036,906,234.5,779,108.1,224.2
+"DL026","Okhla Phase-2, Delhi - DPCC","Delhi","Delhi",28.530785,77.271255,"Active",882,876,217.4,812,100.4,218.2
+"DL027","Patparganj, Delhi - DPCC","Delhi","Delhi",28.623763,77.287209,"Active",882,874,202.5,817,94.1,187.1
+"DL028","Punjabi Bagh, Delhi - DPCC","Delhi","Delhi",28.674045,77.131023,"Active",1913,1472,294.3,769,119.8,123.8
+"DL029","Pusa, Delhi - DPCC","Delhi","Delhi",28.63611,77.173332,"Active",730,687,214.5,677,97,200.1
+"DL030","Pusa, Delhi - IMD","Delhi","Delhi",28.639652,77.146275,"Active",1030,928,184.8,769,83.6,162.9
+"DL031","R K Puram, Delhi - DPCC","Delhi","Delhi",28.563262,77.186937,"Active",1916,1693,247.4,838,119.4,242
+"DL032","Rohini, Delhi - DPCC","Delhi","Delhi",28.732528,77.11992,"Active",882,871,253.2,772,122.8,247.8
+"DL033","Shadipur, Delhi - CPCB","Delhi","Delhi",28.6514781,77.1473105,"Active",2009,1055,235.1,636,112,NA
+"DL034","Sirifort, Delhi - CPCB","Delhi","Delhi",28.5504249,77.2159377,"Active",1337,1183,257.9,1012,118.9,253.1
+"DL035","Sonia Vihar, Delhi - DPCC","Delhi","Delhi",28.710508,77.249485,"Active",882,869,225.5,727,104.1,211.4
+"DL036","Sri Aurobindo Marg, Delhi - DPCC","Delhi","Delhi",28.531346,77.190156,"Active",730,725,197.6,622,85.2,152.8
+"DL037","Vivek Vihar, Delhi - DPCC","Delhi","Delhi",28.672342,77.31526,"Active",882,873,234.5,746,106.9,225.4
+"DL038","Wazirpur, Delhi - DPCC","Delhi","Delhi",28.699793,77.165453,"Active",882,871,271.8,827,127.6,278
+"GJ001","Maninagar, Ahmedabad - GPCB","Ahmedabad","Gujarat",23.002657,72.591912,"Active",2009,1334,452.1,2049,67.9,114.6
+"HR011","NISE Gwal Pahari, Gurugram - IMD","Gurugram","Haryana",28.422681,77.148944,"Active",914,745,214.8,732,103.1,190.6
+"HR012","Sector-51, Gurugram - HSPCB","Gurugram","Haryana",28.4227,77.0667,"Active",119,118,154,328,54.6,132.8
+"HR013","Teri Gram, Gurugram - HSPCB","Gurugram","Haryana",28.4275,77.1465,"Active",119,116,115.3,197,54.4,100.9
+"HR014","Vikas Sadan, Gurugram - HSPCB","Gurugram","Haryana",28.4501238,77.0263051,"Active",1679,1353,222.1,891,115.5,NA
+"JH001","Tata Stadium, Jorapokhar - JSPCB","Jorapokhar","Jharkhand",23.707909,86.41467,"Active",1169,771,159.3,604,64.2,149.7
+"KA002","BTM Layout, Bengaluru - CPCB","Bengaluru","Karnataka",12.9135218,77.5950804,"Active",905,839,89.8,412,38.1,NA
+"KA003","BWSSB Kadabesanahalli, Bengaluru - CPCB","Bengaluru","Karnataka",12.9352049,77.6814488,"Active",2009,1596,99,727,34.1,NA
+"KA004","Bapuji Nagar, Bengaluru - KSPCB","Bengaluru","Karnataka",12.951913,77.539784,"Active",738,678,95.3,296,35.8,75.4
+"KA005","City Railway Station, Bengaluru - KSPCB","Bengaluru","Karnataka",12.9756843,77.5660749,"Active",1696,1181,110.7,482,NA,111.8
+"KA006","Hebbal, Bengaluru - KSPCB","Bengaluru","Karnataka",13.029152,77.585901,"Active",738,663,77.4,179,28.9,63.2
+"KA007","Hombegowda Nagar, Bengaluru - KSPCB","Bengaluru","Karnataka",12.938539,77.5901,"Active",730,661,83.6,249,27.5,63.9
+"KA008","Jayanagar 5th Block, Bengaluru - KSPCB","Bengaluru","Karnataka",12.924,77.583,"Active",738,643,90.4,328,32.7,76.6
+"KA009","Peenya, Bengaluru - CPCB","Bengaluru","Karnataka",13.0270199,77.494094,"Active",2009,1618,94.1,461,42.4,NA
+"KA010","Sanegurava Halli, Bengaluru - KSPCB","Bengaluru","Karnataka",12.990328,77.5431385,"Active",1699,1069,68.3,298,NA,60.5
+"KA011","Silk Board, Bengaluru - KSPCB","Bengaluru","Karnataka",12.917348,77.622813,"Active",734,691,95,308,32.4,85.3
+"KL002","Kacheripady, Ernakulam - Kerala PCB","Ernakulam","Kerala",9.985653,76.281342,NA,162,153,92.4,180,24.9,48.3
+"KL004","Vyttila, Kochi - Kerala PCB","Kochi","Kerala",9.969447,76.321186,NA,162,158,104.3,277,31.4,67.3
+"KL007","Kariavattom, Thiruvananthapuram - Kerala PCB","Thiruvananthapuram","Kerala",8.5637,76.8865,"Active",140,124,67.2,120,28.8,51.4
+"KL008","Plammoodu, Thiruvananthapuram - Kerala PCB","Thiruvananthapuram","Kerala",8.5149093,76.9435879,"Active",1112,1046,75.6,230,27.3,52.3
+"MH005","Bandra, Mumbai - MPCB","Mumbai","Maharashtra",19.0627,72.84614,"Active",2009,696,105.4,307,32.1,91.4
+"MH006","Borivali East, Mumbai - MPCB","Mumbai","Maharashtra",19.2243333,72.8658113,"Active",386,299,68.6,279,29.4,61.5
+"MH007","Chhatrapati Shivaji Intl. Airport (T2), Mumbai - MPCB","Mumbai","Maharashtra",19.10078,72.87462,"Active",394,381,121.3,318,41.4,105.3
+"MH008","Colaba, Mumbai - MPCB","Mumbai","Maharashtra",18.91,72.82,"Active",374,357,94.7,315,37.9,77.2
+"MH009","Kurla, Mumbai - MPCB","Mumbai","Maharashtra",19.0863,72.8888,"Active",392,390,127.3,312,40.3,119.7
+"MH010","Powai, Mumbai - MPCB","Mumbai","Maharashtra",19.1375,72.915056,"Active",394,388,82.2,282,32.2,68.5
+"MH011","Sion, Mumbai - MPCB","Mumbai","Maharashtra",19.047,72.8746,"Active",378,375,115.8,316,41.2,108.8
+"MH012","Vasai West, Mumbai - MPCB","Mumbai","Maharashtra",19.3832,72.8204,"Active",395,287,108.3,313,40.4,87.7
+"MH013","Vile Parle West, Mumbai - MPCB","Mumbai","Maharashtra",19.10861,72.83622,"Active",395,322,99.9,314,38.2,88.2
+"MH014","Worli, Mumbai - MPCB","Mumbai","Maharashtra",18.9936162,72.8128113,"Active",387,377,98,323,36.6,82.4
+"ML001","Lumpyngngad, Shillong - Meghalaya PCB","Shillong","Meghalaya",25.5586,91.8985,"Active",310,205,53.8,182,30.8,42.2
+"MP001","T T Nagar, Bhopal - MPPCB","Bhopal","Madhya Pradesh",23.233584,77.400574,"Active",289,278,132.8,312,50.1,119.3
+"MZ001","Sikulpuikawn, Aizawl - Mizoram PCB","Aizawl","Mizoram",23.7176342,92.7192841,"Active",113,111,34.8,92,17.1,23.4
+"OD001","GM Office, Brajrajnagar - OSPCB","Brajrajnagar","Odisha",21.8004996,83.8396977,"Active",938,713,150.3,355,64.1,124.2
+"OD002","Talcher Coalfields,Talcher - OSPCB","Talcher","Odisha",20.9360711,85.1707021,"Active",925,698,172.9,570,61.4,165.8
+"PB001","Golden Temple, Amritsar - PPCB","Amritsar","Punjab",31.62,74.876512,"Active",1221,1126,119.9,869,55.5,115.2
+"RJ004","Adarsh Nagar, Jaipur - RSPCB","Jaipur","Rajasthan",26.902909,75.836858,"Active",993,989,121.2,477,43.3,120.3
+"RJ005","Police Commissionerate, Jaipur - RSPCB","Jaipur","Rajasthan",26.9164092,75.7994901,"Active",1114,1043,149.5,429,67.1,134.7
+"RJ006","Shastri Nagar, Jaipur - RSPCB","Jaipur","Rajasthan",26.9502929,75.730943,"Active",982,979,132.9,644,56.6,121.1
+"TG001","Bollaram Industrial Area, Hyderabad - TSPCB","Hyderabad","Telangana",17.540891,78.358528,"Active",1233,921,97.2,165,43.1,96.7
+"TG002","Central University, Hyderabad - TSPCB","Hyderabad","Telangana",17.457,78.334,"Active",1115,1058,92.2,444,34.5,81.6
+"TG003","ICRISAT Patancheru, Hyderabad - TSPCB","Hyderabad","Telangana",17.5184,78.278777,"Active",1233,1195,90.8,213,37,87.7
+"TG004","IDA Pashamylaram, Hyderabad - TSPCB","Hyderabad","Telangana",17.5316895,78.218939,"Active",1400,1328,97.1,281,41,91.9
+"TG005","Sanathnagar, Hyderabad - TSPCB","Hyderabad","Telangana",17.4559458,78.4332152,"Active",2006,1368,116.7,917,55.7,NA
+"TG006","Zoo Park, Hyderabad - TSPCB","Hyderabad","Telangana",17.349694,78.451437,"Active",1765,1155,104.7,247,49.7,99.6
+"TN001","Alandur Bus Depot, Chennai - CPCB","Chennai","Tamil Nadu",12.9099161,80.1076538,"Active",2009,1664,117.9,661,55.2,NA
+"TN002","Manali Village, Chennai - TNPCB","Chennai","Tamil Nadu",13.1662,80.2584,"Active",379,320,107.4,291,24.7,62.8
+"TN003","Manali, Chennai - CPCB","Chennai","Tamil Nadu",13.164544,80.26285,"Active",2009,1419,128.5,636,60.1,NA
+"TN004","Velachery Res. Area, Chennai - CPCB","Chennai","Tamil Nadu",13.0052189,80.2398125,"Active",2009,1407,95.1,449,36.9,NA
+"TN005","SIDCO Kurichi, Coimbatore - TNPCB","Coimbatore","Tamil Nadu",10.942451,76.978996,"Active",386,344,73,120,29.2,38
+"UP012","Central School, Lucknow - CPCB","Lucknow","Uttar Pradesh",26.8821003,80.9302753,"Active",2009,1698,194.7,617,93.5,NA
+"UP013","Gomti Nagar, Lucknow - UPPCB","Lucknow","Uttar Pradesh",26.86812,81.005119,"Active",316,295,141.7,526,70.3,NA
+"UP014","Lalbagh, Lucknow - CPCB","Lucknow","Uttar Pradesh",26.8458805,80.9365541,"Active",2009,1698,227.2,707,116.4,NA
+"UP015","Nishant Ganj, Lucknow - UPPCB","Lucknow","Uttar Pradesh",26.871428,80.957145,"Inactive",755,566,223.1,533,109.5,NA
+"UP016","Talkatora District Industries Center, Lucknow - CPCB","Lucknow","Uttar Pradesh",26.83399722,80.8917361,"Active",1010,988,254,814,134.8,NA
+"WB007","Ballygunge, Kolkata - WBPCB","Kolkata","West Bengal",22.5367507,88.3638022,"Active",307,302,143.1,362,59.5,108.9
+"WB008","Bidhannagar, Kolkata - WBPCB","Kolkata","West Bengal",22.58157048,88.41002457,"Active",316,302,109.1,297,41.9,86.2
+"WB009","Fort William, Kolkata - WBPCB","Kolkata","West Bengal",22.55664,88.342674,"Active",398,395,121.9,359,54,99.6
+"WB010","Jadavpur, Kolkata - WBPCB","Kolkata","West Bengal",22.49929,88.36917,"Active",395,387,97.3,323,40.8,80.9
+"WB011","Rabindra Bharati University, Kolkata - WBPCB","Kolkata","West Bengal",22.627847,88.380669,"Active",604,552,181.4,545,88.7,171.1
+"WB012","Rabindra Sarobar, Kolkata - WBPCB","Kolkata","West Bengal",22.51106,88.35142,"Active",331,321,104.3,341,45.2,89.1
+"WB013","Victoria, Kolkata - WBPCB","Kolkata","West Bengal",22.5448082,88.3403691,"Active",814,737,138.2,447,59.4,103.9

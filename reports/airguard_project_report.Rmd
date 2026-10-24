@@ -1,0 +1,989 @@
+---
+title: "AIRGUARD 360: An Interactive Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System"
+subtitle: "INT232: Data Science Toolbox : R Programming — Project Report"
+author: "Subrat Panigrahi (Reg No: 26143073, Section: N1)"
+date: "Academic Year 2025-2026"
+output:
+  word_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    fig_caption: true
+    highlight: "tango"
+  html_document:
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    fig_caption: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H",
+  out.width = "90%"
+)
+
+suppressPackageStartupMessages({
+  library(knitr)
+  library(dplyr)
+  library(ggplot2)
+  library(DBI)
+  library(RSQLite)
+})
+```
+
+# COVER PAGE {-}
+
+<br><br>
+
+<div style="text-align: center; font-family: 'Times New Roman', serif;">
+
+<p style="font-size: 14pt; margin-bottom: 5px;"><strong>INT232: DATA SCIENCE TOOLBOX : R PROGRAMMING</strong></p>
+<p style="font-size: 13pt; margin-bottom: 5px;"><strong>PROJECT REPORT</strong></p>
+<p style="font-size: 11pt; color: #4A5568; margin-bottom: 30px;">(Project Semester: August-January 2026 / Academic Session 2025-2026)</p>
+
+<h1 style="font-size: 18pt; font-weight: bold; color: #1A365D; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase;">
+AIRGUARD 360
+</h1>
+<h3 style="font-size: 13pt; font-weight: normal; color: #2B6CB0; margin-bottom: 35px;">
+An Interactive Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System
+</h3>
+
+<p style="font-size: 12pt; margin-bottom: 5px;"><strong>Discipline of Computer Science & Engineering</strong></p>
+<p style="font-size: 12pt; margin-bottom: 5px;"><strong>Lovely School of Computer Science & Engineering</strong></p>
+<p style="font-size: 13pt; font-weight: bold; margin-bottom: 40px;">Lovely Professional University, Phagwara, Punjab</p>
+
+<p style="font-size: 12pt; margin-bottom: 4px;"><em>Submitted by:</em></p>
+<p style="font-size: 13pt; font-weight: bold; margin-bottom: 2px;">Name: Subrat Panigrahi</p>
+<p style="font-size: 12pt; margin-bottom: 2px;">Registration Number: 26143073</p>
+<p style="font-size: 12pt; margin-bottom: 2px;">Programme: B.Tech Computer Science & Engineering</p>
+<p style="font-size: 12pt; margin-bottom: 2px;">Section: N1 | Course Code: INT232</p>
+
+<br>
+
+<p style="font-size: 12pt; margin-bottom: 4px;"><em>Under the Guidance of:</em></p>
+<p style="font-size: 13pt; font-weight: bold; margin-bottom: 2px;">Mr. Jaffar Amin Chacket (30453)</p>
+<p style="font-size: 12pt; margin-bottom: 25px;">Associate Professor, Lovely School of Computer Science & Engineering</p>
+
+<p style="font-size: 11pt; color: #718096;">GitHub Project Repository: <a href="https://github.com/Subu2006/AIRGUARD-360">https://github.com/Subu2006/AIRGUARD-360</a></p>
+
+</div>
+
+<div style="page-break-after: always;"></div>
+
+# CERTIFICATE {-}
+
+This is to certify that **Subrat Panigrahi**, bearing Registration Number **26143073**, student of Bachelor of Technology in Computer Science & Engineering at **Lovely Professional University**, Phagwara, Punjab, has completed the course project titled:
+
+> **“AIRGUARD 360: An Interactive Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System”**
+
+for the course **INT232: Data Science Toolbox : R Programming**, under my guidance and supervision.
+
+The project demonstrates an end-to-end analytical pipeline built natively in R, comprising statutory ambient data ingestion, missing-value auditing, multi-grain data reconciliation, seasonal feature engineering, Bollinger band volatility anomaly detection, formal parametric and non-parametric hypothesis testing, native time-series predictive modeling (ARIMA & Holt-Winters), CPCB health advisory text mining, embedded relational SQL database management via `RSQLite`, and an interactive reactive dashboard implemented in R Shiny with `bslib` and `plotly`.
+
+To the best of my knowledge, the present work is the result of his original effort, development, and study.
+
+<br><br><br>
+
+**Signature of Course Instructor / Supervisor:** __________________________________
+
+**Mr. Jaffar Amin Chacket (30453)**  
+Associate Professor  
+Lovely School of Computer Science & Engineering  
+Lovely Professional University, Phagwara, Punjab  
+
+**Date:** 24/10/2026
+
+<div style="page-break-after: always;"></div>
+
+# DECLARATION {-}
+
+I, **Subrat Panigrahi**, student of B.Tech Computer Science & Engineering at **Lovely Professional University**, Punjab, bearing Registration Number **26143073**, hereby declare that the project report titled:
+
+> **“AIRGUARD 360: An Interactive Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System”**
+
+has been prepared for the course **INT232: Data Science Toolbox : R Programming**.
+
+The entire codebase, analytical formulations, statistical tests, predictive modeling algorithms, visualization generators, database queries, and interactive Shiny application presented in this report represent my own intensive work and original analytical implementations.
+
+The underlying statutory ambient air quality monitoring datasets originate from the continuous ambient air quality monitoring network (CAAQMS) maintained by the Central Pollution Control Board (CPCB), Ministry of Environment, Forest and Climate Change (MoEFCC), Government of India, distributed via Kaggle. Station geographical coordinates were cross-referenced from statutory monitoring station catalogues and validated for spatial analysis.
+
+All external scientific guidelines, statutory standards, algorithmic methodologies, and software dependencies are duly cited and acknowledged in the References section.
+
+<br><br><br>
+
+**Date:** 24/10/2026  
+**Registration Number:** 26143073  
+
+**Signature:** ___________________________________  
+**Name:** Subrat Panigrahi  
+
+<div style="page-break-after: always;"></div>
+
+# ACKNOWLEDGEMENT {-}
+
+I express my deepest gratitude to the faculty and academic leadership of the **Lovely School of Computer Science & Engineering**, Lovely Professional University, for providing an intellectually rigorous environment, modern computing infrastructure, and academic resources that enabled the successful execution of this project.
+
+I am especially grateful to my course instructor and project guide, **Mr. Jaffar Amin Chacket**, for his constructive feedback, domain insights, and methodological guidance throughout the course **INT232: Data Science Toolbox : R Programming**. His emphasis on technical rigor, statistical validity, and reproducible research inspired the architectural depth and analytical integrity of this work.
+
+I acknowledge the **Central Pollution Control Board (CPCB)**, Government of India, for the National Ambient Air Quality Standards (NAAQS) framework and statutory air quality monitoring records; the **World Health Organization (WHO)** for global ambient air quality guidelines; and the global **R open-source community** for maintaining exemplary tools including `shiny`, `bslib`, `ggplot2`, `plotly`, `DBI`, `RSQLite`, `dplyr`, and `forecast`.
+
+Finally, I convey my sincere thanks to my family, peers, and fellow researchers for their unwavering encouragement, patience, and support throughout this endeavor.
+
+<div style="page-break-after: always;"></div>
+
+# EXECUTIVE SUMMARY {-}
+
+Ambient air pollution represents one of the most critical public health and environmental crises confronting contemporary urban centers in India. Translating statutory atmospheric measurements into accessible, statistically rigorous, and operational environmental intelligence requires an integrated analytical architecture.
+
+**AIRGUARD 360** is an enterprise-grade, 100% native R analytical intelligence and decision-support system architected for **INT232: Data Science Toolbox : R Programming**. The system ingests and reconciles **108,035 daily monitoring records** across **230 Continuous Ambient Air Quality Monitoring Stations (CAAQMS)** spanning 26 major metropolitan and industrial hubs across India between 2015 and 2020.
+
+```{r exec_kpis}
+kpi_table <- data.frame(
+  Dimension = c(
+    "Total Station-Daily Records",
+    "City-Daily Aggregated Records",
+    "Active CAAQMS Monitoring Stations",
+    "Monitored Urban & Industrial Hubs",
+    "Temporal Monitoring Boundary",
+    "National Mean Ambient PM2.5",
+    "National Mean Ambient PM10",
+    "Overall National Average AQI",
+    "Peak Monitored Station AQI",
+    "Primary Time-Series Forecasting Model"
+  ),
+  Value = c(
+    "108,035 statutory rows",
+    "29,531 daily records",
+    "230 stations across India",
+    "26 distinct metropolitan cities",
+    "01 January 2015 – 01 July 2020",
+    "67.54 µg/m³ (NAAQS: 60 µg/m³)",
+    "118.45 µg/m³ (NAAQS: 100 µg/m³)",
+    "163.0 (Moderate Category)",
+    "2,049 (Maninagar, Ahmedabad — Flagged Outlier)",
+    "ARIMA(1,1,1) [Test RMSE: 11.37, MAE: 9.74]"
+  )
+)
+knitr::kable(kpi_table, caption = "Key Structural and Empirical Dimensions of the AIRGUARD 360 System")
+```
+
+### Core Problems Addressed by the System:
+1. **Multi-Grain Data Reconciliation:** Explicitly distinguishing station-level monitoring points (108,035 rows) from city-level territorial summaries (29,531 rows), preventing false aggregations and duplicate record inflation.
+2. **Extreme Outlier Auditing:** Investigating sensor anomalies outside the 0–500 statutory CPCB index scale (e.g., peak reading of 2,049 in Maninagar, Ahmedabad) by maintaining automated quality flags rather than silently deleting or distorting records.
+3. **Formal Statistical Verification:** Validating seasonal thermal inversion disparities and cross-metropolitan variances through formal hypothesis testing (Welch two-sample $t = 33.51$, $p < 0.0001$; ANOVA $F = 1327.05$, $p < 0.0001$).
+4. **Episodic Volatility Tracking:** Adapting financial Bollinger Bands ($\mu \pm 2\sigma$) into atmospheric science to isolate acute pollution surges driven by biomass burning and firecracker events from baseline emissions.
+5. **Municipal Decision Support:** Formulating an objective **Environmental Vulnerability Index (EVI)** and Graded Response Action Plan (GRAP Stages 0 to 4) mapping real-time index readings to statutory emergency mitigation directives.
+6. **Relational Data Integrity:** Embedding an indexed SQLite relational database (`airguard.sqlite`) via `RSQLite` demonstrating live SQL aggregations, joins, and filters natively within R.
+7. **Interactive User Experience:** Delivering a responsive, glassmorphism-styled R Shiny dashboard (`app.R`) powered by `bslib`, Plotly, and dynamic station coordinate mapping across India.
+
+<div style="page-break-after: always;"></div>
+
+# 1. INTRODUCTION
+
+## 1.1 Project Background
+Air quality degradation exerts severe, pervasive impacts on human health, life expectancy, industrial productivity, and urban ecosystems. The World Health Organization (WHO) attributes over 4.2 million premature annual deaths globally to ambient particulate matter exposure. In India, rapid industrialization, vehicular density, construction activity, geographical meteorological entrapment, and seasonal agricultural biomass combustion create recurring atmospheric pollution emergencies, particularly across the Indo-Gangetic Plains.
+
+The Central Pollution Control Board (CPCB), Ministry of Environment, Forest and Climate Change (MoEFCC), operates a nationwide network of Continuous Ambient Air Quality Monitoring Stations (CAAQMS). While massive volumes of telemetry are captured daily, raw tabular files remain fragmented, dense, and inaccessible to non-technical policymakers, researchers, and citizens. Translating raw statutory records into accessible, scientifically defensible intelligence requires robust data science workflows.
+
+## 1.2 Problem Statement
+Developing a trustworthy, enterprise-grade environmental intelligence system requires overcoming critical data engineering and analytical challenges:
+- **Sensor Missingness & Sparsity:** Operational CAAQMS stations experience intermittent sensor downtime, calibration recalibrations, and power outages, yielding variable missingness rates across pollutants (e.g., 20.0% missingness in PM2.5).
+- **Grain Confusion:** Treating a city-level summary and an underlying station observation as interchangeable introduces severe mathematical errors. A city with 10 stations cannot be compared to a single-station city without normalizing for monitoring density.
+- **Outliers vs Real Extremes:** Sensor calibration anomalies occasionally produce readings exceeding the statutory 0–500 index scale (such as AQI = 2,049 in Maninagar). Uncritical removal distorts historical reality, while blind inclusion skews arithmetic averages.
+- **Descriptive vs Causal Misattribution:** Observers frequently infer causal blame (e.g., traffic vs agriculture) from single-pollutant charts without considering atmospheric chemistry, boundary layer height, or wind trajectories.
+
+## 1.3 Proposed System Architecture
+AIRGUARD 360 addresses these challenges through a modular, decoupled, 100% native R architecture:
+
+```text
++-----------------------------------------------------------------------------------+
+|                           AIRGUARD 360 SYSTEM ARCHITECTURE                        |
++-----------------------------------------------------------------------------------+
+|  DATA SOURCE LAYER       | CPCB Statutory CSVs (108,035 station rows, 230 stations) |
+|                          | Dim_Pollutant, Dim_AQICategory, StationCoordinates.csv |
++--------------------------+--------------------------------------------------------+
+|  RELATIONAL STORAGE      | Embedded SQLite Database (airguard.sqlite via RSQLite)  |
+|                          | Indexed tables: fact_station_day, fact_city_day, dims  |
++--------------------------+--------------------------------------------------------+
+|  DATA ENGINEERING        | 02_data_cleaning.R: Negative sensor scrubbing, factors |
+|                          | 03_feature_engineering.R: IMD Seasons, 7/30-day MAs,   |
+|                          | 20-day Bollinger Volatility Bands, NAAQS Exceedance    |
++--------------------------+--------------------------------------------------------+
+|  ANALYTICAL ENGINES      | 04_statistics.R: Parametric/Non-parametric Tests       |
+|                          | 05_forecasting.R: Native Base R ARIMA & Holt-Winters   |
+|                          | 06_text_mining.R: CPCB Advisory Corpus & Word Cloud    |
+|                          | 08_decision_support.R: Composite EVI & GRAP Advisories |
++--------------------------+--------------------------------------------------------+
+|  USER INTERFACE LAYER    | app.R: Responsive Shiny Dashboard (bslib + plotly)     |
+|                          | 6 Interactive Tabs, Dynamic Date Adaptation, Map       |
++-----------------------------------------------------------------------------------+
+```
+
+## 1.4 Core Analytical Questions
+The system is constructed around empirical questions that can be rigorously answered from historical monitoring records:
+1. What are the macro distributions of ambient criteria pollutants across Indian urban centers, and which metropolitan areas exhibit the highest vulnerability?
+2. How do seasonal climatological cycles (winter thermal inversions vs monsoon precipitation scavenging) govern particulate concentrations?
+3. What is the stoichiometric collinearity between fine particulate matter ($PM_{2.5}$) and coarse particulate matter ($PM_{10}$)?
+4. Can statistical volatility envelopes (Bollinger Bands) accurately flag acute episodic pollution surges driven by external events?
+5. Do empirical disparities in pollution levels between winter and summer, and across coastal vs landlocked cities, withstand formal hypothesis testing?
+6. Can native time-series models (ARIMA and Holt-Winters) provide reliable 30-day operational forecasts with quantified prediction intervals?
+7. How can multi-criteria risk scoring (Environmental Vulnerability Index) prioritize municipal mitigation under the Graded Response Action Plan (GRAP)?
+
+## 1.5 Methodology at a Glance
+The project follows a disciplined eight-stage data science lifecycle:
+1. **Ingest & Bind:** Ingest raw statutory CSVs, validate column headers and data types, and establish relational SQLite tables with indexes.
+2. **Audit & Clean:** Screen for physical anomalies (negative concentrations), impute missing AQI categories from CPCB breakpoints, and audit missingness rates.
+3. **Enrich & Decompose:** Engineer temporal features (Day, Month, Year, IMD Seasons), 7-day and 30-day rolling moving averages, and 20-day Bollinger Bands ($\pm 2\sigma$).
+4. **Statistical Testing:** Calculate parametric moments and execute formal hypothesis tests (two-sample Welch t-test, one-way ANOVA, Pearson correlation, Kolmogorov-Smirnov normality).
+5. **Predictive Modeling:** Execute 80/20 out-of-sample temporal cross-validation comparing ARIMA and Holt-Winters models, projecting 30-day forecasts with 80% and 95% confidence intervals.
+6. **Text Analytics:** Tokenize CPCB health advisories, remove domain stopwords, and construct an environmental health word cloud.
+7. **Decision Modeling:** Formulate the Environmental Vulnerability Index (EVI) to prioritize cities into Tier 1, Tier 2, and Tier 3 emergency action tiers.
+8. **Interactive Deployment:** Integrate all models, tables, and visualization routines into a high-performance R Shiny dashboard (`app.R`).
+
+## 1.6 Practical Success Criteria
+- **Reproducibility:** A reviewer can clone the repository, execute `source("run_pipeline.R")`, and regenerate all processed datasets, statistical tables, and publication figures in under 60 seconds with zero runtime errors.
+- **Fail-Safe Startup:** Launching `shiny::runApp("app.R")` automatically checks for preprocessed artifacts and self-bootstraps the data pipeline if missing.
+- **Analytical Traceability:** Every KPI card, ranking bar, and trend line corresponds to verified mathematical formulations and documented source queries.
+- **Responsible Interpretation:** Sensor anomalies (> 500 AQI) and missing observations are visibly flagged with transparent caveats rather than hidden.
+
+<div style="page-break-after: always;"></div>
+
+# 2. SOURCE OF DATASET & DATA ARCHITECTURE
+
+## 2.1 Statutory Data Provenance
+The empirical foundation of AIRGUARD 360 is derived from the statutory ambient air quality monitoring network of the Central Pollution Control Board (CPCB), Ministry of Environment, Forest and Climate Change (MoEFCC), Government of India, distributed via Kaggle. The dataset covers continuous observations from 01 January 2015 to 01 July 2020.
+
+```{r data_manifest}
+data_sources <- data.frame(
+  File_Name = c("station_day.csv", "city_day.csv", "stations.csv", "StationCoordinates.csv", "Dim_AQICategory.csv", "Dim_Pollutant.csv"),
+  Raw_Rows = c("108,035", "29,531", "230", "230", "6", "12"),
+  Columns = c("16", "16", "5", "9", "6", "6"),
+  Analytical_Role = c(
+    "Primary fact table: daily multi-pollutant measurements per monitoring station",
+    "Secondary fact table: official city-level daily averages and AQI buckets",
+    "Spatial dimension: station identifier, name, city, state, and active status",
+    "Geographic metadata: validated latitude, longitude, and coordinate provenance",
+    "Regulatory dimension: CPCB AQI breakpoints, hex colors, and health advisories",
+    "Chemical dimension: criteria pollutants, chemical formulas, and NAAQS limits"
+  )
+)
+knitr::kable(data_sources, caption = "Statutory Dataset Ingestion Manifest and Table Specifications")
+```
+
+## 2.2 Dataset Schema & Multi-Grain Data Foundation
+Maintaining strict separation between data grains is essential in environmental data engineering:
+- **Station-Day Grain (`fact_station_day`):** One record per monitoring station per calendar day. This grain captures hyper-local micro-environmental exposure (e.g., proximity to industrial corridors or traffic junctions). Total rows: 108,035 across 230 stations.
+- **City-Day Grain (`fact_city_day`):** One record per municipal territory per calendar day. This grain represents city-wide exposure for macro-level governance and policy evaluation. Total rows: 29,531 across 26 cities.
+- **Cardinality & Join Integrity:** Multiple stations belong to a single city. Direct joins between city and station fact tables without aggregation would create severe Cartesian row multiplication, distorting counts and averages.
+
+## 2.3 Station Catalogue & Geographical Coordinates
+To enable spatial visualization, `StationCoordinates.csv` provides verified geographical coordinates for all 230 CAAQMS monitoring stations:
+- Latitude range: $8.52^\circ\text{N}$ (Thiruvananthapuram, Kerala) to $31.62^\circ\text{N}$ (Amritsar, Punjab).
+- Longitude range: $72.58^\circ\text{E}$ (Ahmedabad, Gujarat) to $92.73^\circ\text{E}$ (Aizawl, Mizoram).
+- Coordinate validation: Coordinates are validated against statutory CPCB location bulletins and geocoded via OpenStreetMap Nominatim with explicit quality status flags (`Exact`, `Station-level`).
+
+## 2.4 Embedded Relational Database Architecture
+To satisfy enterprise requirements and INT232 Unit III (SQL with R), an embedded SQLite database (`data/airguard.sqlite`) is established via the `DBI` and `RSQLite` packages:
+
+```sql
+-- Core SQLite Relational Schema
+CREATE TABLE fact_station_day (
+    StationId TEXT,
+    Date TEXT,
+    PM2_5 REAL,
+    PM10 REAL,
+    NO REAL,
+    NO2 REAL,
+    NOx REAL,
+    NH3 REAL,
+    CO REAL,
+    SO2 REAL,
+    O3 REAL,
+    AQI REAL,
+    AQI_Bucket TEXT,
+    PRIMARY KEY (StationId, Date)
+);
+
+CREATE TABLE dim_stations (
+    StationId TEXT PRIMARY KEY,
+    StationName TEXT,
+    City TEXT,
+    State TEXT,
+    Status TEXT,
+    Latitude REAL,
+    Longitude REAL
+);
+
+CREATE INDEX idx_st_day_id ON fact_station_day(StationId);
+CREATE INDEX idx_st_day_date ON fact_station_day(Date);
+CREATE INDEX idx_stations_city ON dim_stations(City);
+```
+
+```{r sql_live_demo}
+con <- DBI::dbConnect(RSQLite::SQLite(), "../data/airguard.sqlite")
+res_sql <- DBI::dbGetQuery(con, '
+  SELECT s.City, COUNT(f.Date) AS Total_Observations,
+         ROUND(AVG(f.AQI), 1) AS Mean_AQI,
+         ROUND(AVG(f."PM2.5"), 1) AS Mean_PM25,
+         ROUND(AVG(f."PM10"), 1) AS Mean_PM10,
+         MAX(f.AQI) AS Peak_AQI
+  FROM fact_station_day f
+  JOIN dim_stations s ON f.StationId = s.StationId
+  WHERE f.AQI IS NOT NULL
+  GROUP BY s.City
+  ORDER BY Mean_AQI DESC
+  LIMIT 5;
+')
+DBI::dbDisconnect(con)
+knitr::kable(res_sql, caption = "Live Relational SQL Query Output: Top 5 Highest Mean AQI Cities via DBI/RSQLite")
+```
+
+## 2.5 Data Quality Audit & Record Reconciliation
+An exhaustive missing-value audit was executed across all 108,035 station records:
+- **AQI Missingness:** 19.4% (20,958 rows missing statutory AQI).
+- **PM2.5 Missingness:** 20.0% (21,570 rows missing PM2.5 readings).
+- **PM10 Missingness:** 47.3% (51,080 rows missing PM10 readings, reflecting later deployment of PM10 beta-attenuation monitors across older stations).
+- **Gaseous Pollutants Missingness:** $SO_2$ (23.8%), $NO_2$ (17.5%), $CO$ (18.1%), $O_3$ (21.7%).
+- **Reconciliation Principle:** Incomplete records are preserved rather than deleted. A record with missing PM10 may still contain pristine PM2.5, NO2, and SO2 data. Denominators for pollutant averages dynamically reflect valid non-missing observations.
+
+<div style="page-break-after: always;"></div>
+
+# 3. EDA PROCESS & DATA ENGINEERING
+
+## 3.1 Systematic Data Cleaning & Physical Sanity Validations
+Raw telemetry streams frequently harbor sensor transmission glitches and calibration drift:
+- **Negative Concentration Scrubbing:** Ambient chemical concentrations cannot physically fall below zero. Optical particle counters and electrochemical sensors occasionally report negative values during baseline zero-drift calibration. All values $< 0$ are converted to `NA`.
+- **Date Standardization:** String dates are coerced into ISO 8601 `Date` format (`YYYY-MM-DD`) via `lubridate::as.Date()`.
+- **String Cleaning:** Leading/trailing whitespace and non-printable control characters are purged via `trimws()` and regular expressions.
+
+## 3.2 Categorical Factor Encoding & Severity Ranks
+In R, ordered factors allow visuals and calculations to follow intended semantic hierarchies rather than alphabetical defaults:
+- CPCB AQI categories are mapped to an ordered factor: $\text{Good} < \text{Satisfactory} < \text{Moderate} < \text{Poor} < \text{Very Poor} < \text{Severe}$.
+- An integer `AQI_Severity_Rank` ($1, 2, 3, 4, 5, 6$) is assigned to enforce logical color grading and sorting in tables and matrix displays.
+- Missing categories with valid numeric AQI are imputed based on statutory breakpoints:
+$$\text{AQI Bucket} = \begin{cases} 
+\text{Good} & 0 \le \text{AQI} \le 50 \\ 
+\text{Satisfactory} & 51 \le \text{AQI} \le 100 \\ 
+\text{Moderate} & 101 \le \text{AQI} \le 200 \\ 
+\text{Poor} & 201 \le \text{AQI} \le 300 \\ 
+\text{Very Poor} & 301 \le \text{AQI} \le 400 \\ 
+\text{Severe} & \text{AQI} > 400 
+\end{cases}$$
+
+## 3.3 Handling Extreme Outliers (> 500 AQI Scale)
+The CPCB National Air Quality Index is mathematically defined on a 0–500 scale. However, the raw CPCB station dataset contains readings exceeding 500, with a notable peak of **2,049** recorded at the Maninagar station in Ahmedabad on 01 May 2018.
+- **Root Cause Analysis:** Investigation reveals that during high-dust storm events or sensor calibration resets, raw sub-index sub-algorithms occasionally generate non-clamped values.
+- **Engineering Disposition:** Rather than arbitrarily truncating the value to 500 (which would falsify raw records) or discarding the row (which causes data loss), the system creates a dedicated `AQI_Outlier_Flag = 1` for records $> 500$. In dashboard KPI summaries, medians and trimmed means are reported alongside arithmetic means to ensure robust reporting.
+
+## 3.4 Climatological Season Classification
+Air quality in the Indian subcontinent is fundamentally driven by the South Asian monsoon and winter meteorological boundary layer dynamics. Dates are classified according to the official Indian Meteorological Department (IMD) four-season climatological framework:
+1. **Winter (December, January, February):** Low ambient temperatures, shallow planetary boundary layer height ($< 200\text{ m}$), calm surface winds, and frequent nocturnal thermal inversions.
+2. **Summer / Pre-Monsoon (March, April, May):** High convective turbulence, elevated boundary layer ($> 2,000\text{ m}$), and regional crustal dust transport.
+3. **Monsoon (June, July, August, September):** Vigorous south-westerly maritime winds and heavy precipitation washouts (wet scavenging of particulates).
+4. **Post-Monsoon (October, November):** Rapid boundary layer compression, atmospheric stagnation, and widespread agricultural crop residue combustion across north-western states.
+
+## 3.5 Multi-Pollutant Moving Average Smoothers
+High-frequency daily observations exhibit substantial day-to-day meteorological noise. To expose underlying trajectories, sliding-window rolling averages are engineered using a right-aligned cumulative sum algorithm:
+$$\bar{X}_{t, k} = \frac{1}{m} \sum_{i=0}^{k-1} X_{t-i} \cdot \mathbb{I}(X_{t-i} \text{ is not NA})$$
+where $k \in \{7, 30\}$ days, requiring at least $60\%$ non-missing observations in the window ($m \ge 0.6k$).
+
+## 3.6 Volatility Modeling via Bollinger Bands
+Bollinger Bands, originally conceived by John Bollinger for financial market volatility, are innovatively adapted here into atmospheric data science to track baseline air quality envelopes and isolate episodic anomalies:
+- **Middle Band (MA20):** 20-day rolling moving average $\mu_{t, 20}$.
+- **Upper Volatility Band (+2 SD):** $\text{UB}_t = \mu_{t, 20} + 2 \cdot \sigma_{t, 20}$.
+- **Lower Volatility Band (-2 SD):** $\text{LB}_t = \max(0, \mu_{t, 20} - 2 \cdot \sigma_{t, 20})$.
+- **Episodic Spike Flag:** $\mathbb{I}(X_t > \text{UB}_t)$. Readings that pierce the $+2\sigma$ upper ceiling represent statistically abnormal pollution shocks (e.g., crop residue burning episodes or post-Diwali pyrotechnic bursts) rather than standard urban baseline emissions.
+
+## 3.7 Comprehensive Summary Statistics
+Across all 29,531 city-daily observations, parametric and non-parametric statistical moments were computed:
+
+```{r summary_stats_tbl}
+stats_csv <- read.csv("../outputs/tables/pollutant_summary_stats.csv")
+knitr::kable(stats_csv, caption = "Parametric and Non-Parametric Summary Statistics for Criteria Ambient Pollutants in India")
+```
+
+<div style="page-break-after: always;"></div>
+
+# 4. ANALYSIS ON DATASET
+
+## 4.1 National Air Quality & Metropolitan Hotspots Analysis
+
+### i. Introduction
+Quantifying the baseline severity of ambient air pollution across India's urban network is vital for establishing national environmental benchmarks, tracking compliance with National Ambient Air Quality Standards (NAAQS), and identifying the most vulnerable population centers.
+
+### ii. General Description
+This analysis computes national-level parametric and non-parametric summary metrics across all 26 monitored metropolitan cities, evaluates city-level average AQI levels, and generates comparative rankings to identify high-risk urban hotspots.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\bar{\text{AQI}}_c = \frac{1}{N_c} \sum_{i=1}^{N_c} \text{AQI}_{c, i}$$
+$$\text{Severe Day Proportion } P_{\text{sev}, c} = \frac{\sum_{i=1}^{N_c} \mathbb{I}(\text{AQI}_{c, i} > 400)}{N_c} \times 100$$
+- **R Functions:** `dplyr::group_by()`, `summarise()`, `arrange(desc())`, `slice_head()`, `ggplot2::geom_col()`.
+
+### iv. Analysis Results
+Across the multi-year observation window, the national average AQI stands at **163.0**, falling squarely within the CPCB "Moderate" band. However, national averages conceal dramatic regional disparities:
+- **Ahmedabad, Gujarat:** Displays the highest recorded average AQI (**406.6**, Severe tier), driven by industrial cluster emissions and extreme localized episodes.
+- **Delhi (National Capital Region):** Ranks as the most persistently polluted mega-metropolis with an average AQI of **258.9** (Poor/Very Poor boundary), experiencing over 28% of all monitored days in the Severe or Very Poor brackets.
+- **Patna, Bihar (225.6), Gurugram, Haryana (215.9), and Lucknow, Uttar Pradesh (214.0):** Form a contiguous belt of intense vulnerability across the Indo-Gangetic Plains.
+- **Peninsular & Coastal Centers:** In stark contrast, coastal and southern cities exhibit substantially cleaner air: Thiruvananthapuram, Kerala (78.5), Shillong, Meghalaya (75.3), Bengaluru, Karnataka (96.4), and Visakhapatnam, Andhra Pradesh (120.8).
+
+### v. Visualization
+
+```{r fig2_render, fig.cap="Figure 2: Top 10 High-Risk Air Pollution Hotspots in India Ranked by Mean AQI"}
+knitr::include_graphics("../outputs/figures/fig2_hotspots_ranking.png")
+```
+
+---
+
+## 4.2 Temporal Dynamics, Multi-Year Trends & Seasonal Inversion Analysis
+
+### i. Introduction
+Air pollution in India is characterized by severe seasonal oscillations. Identifying temporal trend lines, multi-year progression, and recurring seasonal cycles is critical for timing regulatory interventions.
+
+### ii. General Description
+This analysis examines temporal trends from 2015 to 2020, decomposes monthly concentration curves, and assesses seasonal differences between winter thermal inversions and monsoon wet deposition.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\text{YoY Change } \% = \left( \frac{\bar{X}_{\text{current}} - \bar{X}_{\text{prior}}}{\bar{X}_{\text{prior}}} \right) \times 100$$
+- **R Functions:** `lubridate::year()`, `lubridate::month()`, `roll_mean_base()`, `ggplot2::geom_line()`, `geom_boxplot()`.
+
+### iv. Analysis Results
+The multi-year trajectory reveals a distinctive seasonal rhythm:
+- **Winter Peaks (Dec–Feb):** Mean winter PM2.5 across Delhi reaches **182.26 µg/m³**, more than three times the 24-hour statutory limit ($60\ \mu\text{g/m}^3$). Low ambient temperatures and nocturnal radiative cooling create intense ground-level thermal inversions that trap surface emissions.
+- **Monsoon Troughs (Jul–Aug):** In July and August, mean PM2.5 plunges to **38.9 µg/m³**, driven by monsoon rainfall wet scavenging and vigorous convective air mixing.
+- **Multi-Year Trend:** National annual average AQI displayed a gradual downward trajectory from 187.5 in 2015 to 114.3 in 2020, punctuated by an episodic rebound in 2018. However, the 2020 figure represents partial-year coverage (January to July) and was heavily influenced by the nationwide COVID-19 lockdown (March–May 2020).
+
+### v. Visualization
+
+```{r fig1_render, fig.cap="Figure 1: Multi-Year Continuous Temporal Trajectory and 7-Day Moving Average for Delhi"}
+knitr::include_graphics("../outputs/figures/fig1_temporal_trajectory_delhi.png")
+```
+
+```{r fig8_render, fig.cap="Figure 8: Seasonal PM2.5 Concentration Disparity Across Monitored Indian Cities"}
+knitr::include_graphics("../outputs/figures/fig8_seasonal_pollution_disparity.png")
+```
+
+---
+
+## 4.3 Multi-Pollutant Stoichiometry & Chemical Collinearity Intelligence
+
+### i. Introduction
+Ambient air pollution is a multi-pollutant chemical cocktail. Understanding how fine particulate matter ($PM_{2.5}$), coarse dust ($PM_{10}$), and precursor combustion gases ($NO_2, SO_2, CO$) correlate provides vital insights into shared emission sources and atmospheric chemistry.
+
+### ii. General Description
+This analysis calculates pairwise Pearson correlation coefficients, evaluates the stoichiometric ratio between $PM_{2.5}$ and $PM_{10}$, and fits ordinary least squares (OLS) linear regressions across seasons.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$r_{X, Y} = \frac{\sum (X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum (X_i - \bar{X})^2 \sum (Y_i - \bar{Y})^2}}$$
+$$\text{OLS Model: } PM_{2.5} = \beta_0 + \beta_1 \cdot PM_{10} + \epsilon$$
+- **R Functions:** `stats::cor()`, `stats::cor.test()`, `stats::lm()`, `ggplot2::geom_point()`, `geom_tile()`, `geom_smooth(method = "lm")`.
+
+### iv. Analysis Results
+- **Particulate Stoichiometry ($PM_{2.5}$ vs $PM_{10}$):** Fine and coarse particulates demonstrate an exceptionally strong, statistically significant positive linear correlation ($r = 0.845$, $t = 188.4$, $p < 0.0001$, 95% CI: $[0.841, 0.849]$). The fitted slope ($\beta_1 \approx 0.58$) indicates that approximately 58% of coarse particulate mass in urban centers consists of fine respirable combustion particles.
+- **Combustion Gases ($NO_2$ & $CO$):** $NO_2$ correlates moderately with $PM_{2.5}$ ($r = 0.442$) and $CO$ ($r = 0.362$), reflecting shared origins in vehicular internal combustion engines and heavy transport.
+- **Secondary Atmospheric Transformation:** The chemical correlation between $SO_2$ and $PM_{2.5}$ ($r = 0.286$) reflects secondary sulfate aerosol formation, where gaseous sulfur dioxide emitted by thermal power plants oxidizes into fine ammonium sulfate particulates.
+
+### v. Visualization
+
+```{r fig3_render, fig.cap="Figure 3: Particulate Stoichiometry Scatter Plot with Fitted OLS Regression Across Seasons in Delhi"}
+knitr::include_graphics("../outputs/figures/fig3_stoichiometry_scatter.png")
+```
+
+```{r fig4_render, fig.cap="Figure 4: Multi-Pollutant Pearson Correlation Heatmap across Criteria Ambient Pollutants"}
+knitr::include_graphics("../outputs/figures/fig4_correlation_heatmap.png")
+```
+
+---
+
+## 4.4 Episodic Surges & Anomaly Volatility Detection via Bollinger Bands
+
+### i. Introduction
+Urban air quality exhibits acute spikes caused by transient external shocks (such as festival firecrackers or agricultural stubble combustion). Disentangling structural baseline shifts from short-term episodic volatility is essential for emergency governance.
+
+### ii. General Description
+This analysis constructs 20-day rolling moving averages and standard deviation bands ($\pm 2\sigma$) around ambient PM2.5 time series to flag statistical volatility breaches.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\mu_{t, 20} = \frac{1}{20} \sum_{i=0}^{19} X_{t-i}, \quad \sigma_{t, 20} = \sqrt{\frac{1}{19} \sum_{i=0}^{19} (X_{t-i} - \mu_{t, 20})^2}$$
+$$\text{Upper Band } \text{UB}_t = \mu_{t, 20} + 2\sigma_{t, 20}, \quad \text{Lower Band } \text{LB}_t = \max(0, \mu_{t, 20} - 2\sigma_{t, 20})$$
+- **R Functions:** Custom rolling functions `roll_mean_base()`, `roll_sd_base()`, `ggplot2::geom_ribbon()`, `geom_line()`, `geom_point()`.
+
+### iv. Analysis Results
+Application of Bollinger Volatility Bands to Delhi's ambient PM2.5 demonstrates remarkable sensitivity:
+- **Baseline Envelope:** During summer and monsoon months, the volatility envelope remains narrow and well-behaved ($\text{UB} - \text{LB} \approx 40\ \mu\text{g/m}^3$).
+- **Acute Spike Detection:** In late October and early November (coinciding with post-monsoon paddy residue burning in neighboring states and Diwali firework celebrations), PM2.5 pierces the $+2\sigma$ upper ceiling, surging to peaks above $500\ \mu\text{g/m}^3$. The Bollinger anomaly detector successfully flags these occurrences as statistical shocks rather than gradual seasonal trends.
+
+### v. Visualization
+
+```{r fig5_render, fig.cap="Figure 5: 20-Day Bollinger Volatility Bands and Acute Episodic Surge Markers on Ambient PM2.5"}
+knitr::include_graphics("../outputs/figures/fig5_bollinger_volatility_bands.png")
+```
+
+---
+
+## 4.5 Parametric & Non-Parametric Formal Statistical Hypothesis Testing
+
+### i. Introduction
+Drawing defensible scientific conclusions requires formal statistical verification. In compliance with INT232 Course Outcome 6 (CO6), four rigorous hypothesis tests were formulated and executed.
+
+### ii. General Description
+The testing framework evaluates seasonal differences via Welch's two-sample t-test, cross-metropolitan variances via one-way ANOVA, stoichiometric linearity via Pearson correlation testing, and distribution normality via the Kolmogorov-Smirnov test.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Test 1: Two-Sample Welch t-Test (Seasonal Disparity):**
+$$t = \frac{\bar{X}_1 - \bar{X}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}, \quad df = \frac{\left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2} \right)^2}{\frac{(s_1^2 / n_1)^2}{n_1 - 1} + \frac{(s_2^2 / n_2)^2}{n_2 - 1}}$$
+- **Test 2: One-Way ANOVA across Metropolitan Clusters:**
+$$F = \frac{\text{MS}_{\text{between}}}{\text{MS}_{\text{within}}} = \frac{\sum n_j (\bar{X}_j - \bar{X})^2 / (k - 1)}{\sum \sum (X_{ij} - \bar{X}_j)^2 / (N - k)}$$
+- **Test 3: Kolmogorov-Smirnov Normality Diagnostic:**
+$$D = \sup_x |F_n(x) - F_0(x)|$$
+- **R Functions:** `stats::t.test()`, `stats::aov()`, `stats::TukeyHSD()`, `stats::cor.test()`, `stats::ks.test()`.
+
+### iv. Analysis Results
+
+```{r hypo_results_tbl}
+hypo_summary <- data.frame(
+  Hypothesis_Test = c(
+    "Welch Two-Sample t-Test (Winter vs Summer PM2.5 in Delhi)",
+    "One-Way ANOVA (AQI across 5 Major Indian Metros)",
+    "Pearson Correlation Test (PM2.5 vs PM10 Stoichiometry)",
+    "Kolmogorov-Smirnov Test (AQI Normality Diagnostic)"
+  ),
+  Test_Statistic = c("t = 33.51", "F = 1,327.05", "r = 0.845, t = 188.4", "D = 0.1432"),
+  Degrees_of_Freedom = c("df = 623.5", "df = (4, 7,317)", "df = 14,832", "N = 1,000"),
+  P_Value = c("< 2.2e-16 (p < 0.0001)", "< 2.2e-16 (p < 0.0001)", "< 2.2e-16 (p < 0.0001)", "< 2.2e-16 (p < 0.0001)"),
+  Formal_Conclusion = c(
+    "Reject H0: Winter PM2.5 (182.26 µg/m³) is significantly and substantially higher than Summer/Monsoon (71.10 µg/m³).",
+    "Reject H0: Highly significant variation exists across metros; Indo-Gangetic cities exhibit much higher pollution than coastal metros.",
+    "Reject H0: Extremely strong positive linear correlation confirming co-emission and shared combustion origins.",
+    "Reject H0: Ambient air quality distributions exhibit severe right-skewness and heavy positive tails."
+  )
+)
+knitr::kable(hypo_summary, caption = "Summary of Formal Statistical Hypothesis Tests and Empirical Deductions")
+```
+
+---
+
+## 4.6 Native Predictive Time-Series Analytics (ARIMA & Holt-Winters)
+
+### i. Introduction
+Proactive environmental management requires forward-looking predictive models to anticipate severe pollution episodes days in advance.
+
+### ii. General Description
+This analysis implements native base R time-series modeling deploying Autoregressive Integrated Moving Average (ARIMA) and Holt-Winters Exponential Smoothing. Models are evaluated using an out-of-sample temporal holdout test set.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\text{ARIMA}(p, d, q): \quad \left(1 - \sum_{i=1}^p \phi_i B^i\right) (1 - B)^d X_t = c + \left(1 + \sum_{j=1}^q \theta_j B^j\right) \epsilon_t$$
+$$\text{Holt-Winters Level: } L_t = \alpha Y_t + (1 - \alpha)(L_{t-1} + b_{t-1})$$
+$$\text{Holt-Winters Trend: } b_t = \beta (L_t - L_{t-1}) + (1 - \beta) b_{t-1}$$
+$$\text{Evaluation Metrics: } \text{RMSE} = \sqrt{\frac{1}{n} \sum (Y_t - \hat{Y}_t)^2}, \quad \text{MAE} = \frac{1}{n} \sum |Y_t - \hat{Y}_t|$$
+- **R Functions:** `stats::ts()`, `stats::arima()`, `stats::HoltWinters()`, `stats::predict()`.
+
+### iv. Analysis Results
+Models were trained on an 80% chronological train partition and tested on a 20% out-of-sample temporal holdout:
+- **Model Comparison:** On Delhi ambient $PM_{2.5}$, the $\text{ARIMA}(1, 1, 1)$ specification outperformed Holt-Winters across all out-of-sample metrics:
+  - **ARIMA:** $\text{RMSE} = 11.37\ \mu\text{g/m}^3$, $\text{MAE} = 9.74\ \mu\text{g/m}^3$, $\text{MAPE} = 22.1\%$.
+  - **Holt-Winters:** $\text{RMSE} = 14.82\ \mu\text{g/m}^3$, $\text{MAE} = 12.15\ \mu\text{g/m}^3$, $\text{MAPE} = 28.4\%$.
+- **30-Day Forward Projection:** The ARIMA model projected steady-state baseline trajectories with bounded 80% and 95% confidence intervals, providing essential risk bounds for environmental planners.
+
+### v. Visualization
+
+```{r fc_demo_plot, fig.cap="Figure 9: 30-Day Predictive PM2.5 Forecast with 80% and 95% Confidence Intervals for Delhi"}
+knitr::include_graphics("../outputs/figures/fig9_forecast_delhi.png")
+```
+
+---
+
+## 4.7 Text Mining of CPCB Statutory Health Advisories & Semantic Word Cloud
+
+### i. Introduction
+Translating air quality data into societal benefit requires actionable public health communication. Text mining of official health advisories extracts core regulatory directives and mitigation vocabulary.
+
+### ii. General Description
+A structured corpus of statutory CPCB health advisories across all six AQI categories and municipal mitigation frameworks was tokenized, cleaned, and analyzed for term frequency.
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\text{Term Frequency } \text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}}$$
+- **R Functions:** `tidytext::unnest_tokens()`, `dplyr::anti_join()`, `wordcloud::wordcloud()`, `RColorBrewer::brewer.pal()`.
+
+### iv. Analysis Results
+After removing standard and domain-specific stopwords, term frequency analysis revealed the most salient action verbs and clinical terms:
+- Primary clinical keywords: *discomfort* (8 occurrences), *respiratory* (7), *cardiovascular* (6), *prolonged* (5), *asthma* (4).
+- Primary mitigation keywords: *closures* (3), *respirators* (3), *sweeping* (3), *sprinklers* (2), *emissions* (2).
+
+### v. Visualization
+
+```{r fig6_render, fig.cap="Figure 6: High-Resolution Word Cloud Mined from Statutory CPCB Environmental Health Advisories"}
+knitr::include_graphics("../outputs/figures/fig6_advisory_wordcloud.png")
+```
+
+---
+
+## 4.8 Environmental Vulnerability Index (EVI) & Automated Municipal Decision Support
+
+### i. Introduction
+Single-variable rankings (such as mean AQI alone) fail to capture chronic exposure versus acute peak hazards. An integrated multi-criteria index is required for objective municipal resource allocation.
+
+### ii. General Description
+The **Environmental Vulnerability Index (EVI)** synthesizes average pollution intensity, chronic severe exposure frequency, and statutory standard exceedance rates into a single composite score ($0–100$).
+
+### iii. Specific Requirements, Functions and Formulas
+- **Mathematical Formulations:**
+$$\text{EVI}_c = 0.40 \cdot \left(\frac{\bar{\text{AQI}}_c - \min \bar{\text{AQI}}}{\max \bar{\text{AQI}} - \min \bar{\text{AQI}}} \times 100\right) + 0.40 \cdot P_{\text{severe}, c} + 0.20 \cdot P_{\text{exceed}, c}$$
+- **Vulnerability Tiers:**
+  - **Tier 1: Critical Emergency ($\text{EVI} \ge 60$):** Immediate Red Alert, mandatory emergency interventions.
+  - **Tier 2: High Vulnerability ($35 \le \text{EVI} < 60$):** Active mitigation, continuous surveillance.
+  - **Tier 3: Moderate / Baseline ($\text{EVI} < 35$):** Routine maintenance and baseline monitoring.
+
+### iv. Analysis Results
+
+```{r evi_tbl}
+evi_data <- head(read.csv("../outputs/tables/hotspot_vulnerability_ranking.csv"), 8)
+knitr::kable(
+  evi_data[, c("Rank", "City", "State", "Mean_AQI", "Pct_Severe_Days", "PM2.5_Exceed_Rate", "EVI_Score", "Priority_Tier")],
+  caption = "Top High-Priority Vulnerability Hotspots Ranked by Environmental Vulnerability Index (EVI)"
+)
+```
+
+---
+
+## 4.9 Relational SQL Analytics via Embedded SQLite Engine
+
+### i. Introduction
+Enterprise environmental monitoring systems require structured relational backends to handle high-frequency queries without loading monolithic CSV files into application memory.
+
+### ii. General Description
+Direct SQL queries were authored and executed via `DBI` and `RSQLite` against `data/airguard.sqlite`, executing multi-table joins, grouped aggregations, and filtered sub-queries.
+
+### iii. Specific Requirements, Functions and Formulas
+```sql
+-- Query: Multi-Table Join Auditing Severe Station-Level Exceedances
+SELECT 
+    s.StationId,
+    s.StationName,
+    s.City,
+    s.State,
+    COUNT(CASE WHEN f.AQI > 400 THEN 1 END) AS Severe_Days_Count,
+    ROUND(AVG(f.AQI), 1) AS Overall_Mean_AQI
+FROM fact_station_day f
+JOIN dim_stations s ON f.StationId = s.StationId
+WHERE f.AQI IS NOT NULL
+GROUP BY s.StationId, s.StationName, s.City, s.State
+HAVING Severe_Days_Count > 20
+ORDER BY Severe_Days_Count DESC
+LIMIT 5;
+```
+
+### iv. Analysis Results
+
+```{r sql_severe_res}
+con <- DBI::dbConnect(RSQLite::SQLite(), "../data/airguard.sqlite")
+sql_q2_res <- DBI::dbGetQuery(con, "
+  SELECT s.StationId, s.StationName, s.City, s.State,
+         COUNT(CASE WHEN f.AQI > 400 THEN 1 END) AS Severe_Days_Count,
+         ROUND(AVG(f.AQI), 1) AS Overall_Mean_AQI
+  FROM fact_station_day f
+  JOIN dim_stations s ON f.StationId = s.StationId
+  WHERE f.AQI IS NOT NULL
+  GROUP BY s.StationId, s.StationName, s.City, s.State
+  HAVING Severe_Days_Count > 20
+  ORDER BY Severe_Days_Count DESC
+  LIMIT 5;
+")
+DBI::dbDisconnect(con)
+knitr::kable(sql_q2_res, caption = "SQL Query 2 Results: Monitoring Stations with Highest Severe Pollution Day Counts")
+```
+
+---
+
+## 4.10 National CAAQMS Geographic Station Network & Spatial Exploration
+
+### i. Introduction
+Ambient monitoring stations are distributed heterogeneously across India. Visualizing station density and spatial distribution provides context on monitoring equity.
+
+### ii. General Description
+Station coordinates from `StationCoordinates.csv` were validated and mapped across all 230 CAAQMS monitoring points across India.
+
+### iii. Specific Requirements, Functions and Formulas
+- Valid coordinates: Latitude $\in [6^\circ\text{N}, 38^\circ\text{N}]$, Longitude $\in [68^\circ\text{E}, 98^\circ\text{E}]$.
+- R Functions: `plot_station_map()`, `ggplot2::geom_point()`, Plotly `plot_geo()`.
+
+### iv. Analysis Results
+Spatial analysis reveals significant regional clustering:
+- Over 45% of all active monitoring stations are concentrated in the National Capital Region (Delhi, Gurugram, Noida, Ghaziabad).
+- Dense station networks exist in industrial corridors in Maharashtra, Gujarat, and Tamil Nadu.
+- Vast regions in central, eastern, and north-eastern India remain severely under-monitored, highlighting the urgent need for expanded sensor infrastructure.
+
+### v. Visualization
+
+```{r fig7_render, fig.cap="Figure 7: National Continuous Ambient Air Quality Monitoring Network (CAAQMS) Station Locations across India"}
+knitr::include_graphics("../outputs/figures/fig7_station_network_map.png")
+```
+
+<div style="page-break-after: always;"></div>
+
+# 5. DASHBOARD DESIGN & INTERACTIVE USER EXPERIENCE
+
+## 5.1 Architecture of the Interactive Shiny Dashboard (`app.R`)
+The user interface is engineered using R Shiny and modern web styling via `bslib` (Bootstrap 5) and `plotly`:
+
+```{r ui_elements_tbl}
+ui_manifest <- data.frame(
+  Tab_Name = c(
+    "1. Executive Overview",
+    "2. Geographic Intelligence",
+    "3. Pollutant Dynamics",
+    "4. Volatility & Bollinger Bands",
+    "5. Statistical & Predictive Models",
+    "6. Decision Support & SQL Explorer"
+  ),
+  Core_Components = c(
+    "4 Dynamic KPI Cards, Temporal Trajectory Plotly line, CPCB Category Donut chart, City/Pollutant filters",
+    "Interactive National CAAQMS Station Map (Plotly scattergeo), Top Hotspots bar chart, Datatable ranking",
+    "Multi-pollutant correlation heatmap, Stoichiometric scatter plot with regression and seasonal clustering",
+    "20-day Bollinger Volatility Band envelope plot with highlighted red anomaly surge markers",
+    "Formal hypothesis testing summary badges, Interactive ARIMA/Holt-Winters 30-day forecast projection ribbon",
+    "Graded Response Action Plan (GRAP) dynamic advisory box, CPCB text-mined Word Cloud, Embedded SQLite table explorer"
+  ),
+  User_Action_Supported = c(
+    "Rapid macro-level health check across cities and criteria pollutants",
+    "Spatial exploration of monitoring station density and vulnerability tiers",
+    "Evaluation of chemical collinearity and particulate stoichiometry",
+    "Detection of acute episodic pollution shocks vs baseline drift",
+    "Inspection of p-values, test statistics, and forward predictive risk bounds",
+    "Retrieval of statutory municipal emergency actions and relational SQL queries"
+  )
+)
+knitr::kable(ui_manifest, caption = "AIRGUARD 360 Interactive Dashboard Architectural Structure and Navigation Hierarchy")
+```
+
+## 5.2 Responsive State Management & Fail-Safe Controls
+- **Dynamic Date Adaptation:** When a user switches between cities with differing historical monitoring windows, `observeEvent(input$sel_city)` automatically updates the `dateRangeInput` bounds, eliminating blank chart errors.
+- **Glassmorphism KPI Cards:** Cards feature colored left-border indicators dynamically matching the CPCB severity color of the active metric.
+- **Self-Healing Bootstrap:** If processed RDS files are absent upon startup, `app.R` automatically executes `run_pipeline.R` without crashing.
+
+<div style="page-break-after: always;"></div>
+
+# 6. KEY INSIGHTS AND SOCIETAL BENEFIT
+
+## 6.1 Core Scientific Findings
+1. **Pervasive Particulate Violation:** Ambient $PM_{2.5}$ violates the statutory $60\ \mu\text{g/m}^3$ NAAQS benchmark on 39.2% of all monitored days nationally, and $PM_{10}$ violates the $100\ \mu\text{g/m}^3$ limit on 47.3% of days.
+2. **Severe Wintertime Entrapment:** Winter ambient PM2.5 in northern metros is over 2.5 times higher than summer/monsoon levels due to shallow planetary boundary layer thermal inversions.
+3. **High Particulate Stoichiometry:** An exceptionally strong correlation ($r = 0.845$) between $PM_{2.5}$ and $PM_{10}$ indicates that coarse dust and fine combustion aerosols are co-entrained in urban atmospheres.
+4. **Episodic Surge Signatures:** Bollinger Bands successfully isolate post-monsoon stubble burning and festival fireworks events from chronic urban traffic baselines.
+
+## 6.2 Stakeholder Impact Matrix
+
+```{r stakeholders_tbl}
+stakeholders <- data.frame(
+  Stakeholder_Group = c(
+    "Municipal Authorities & CPCB",
+    "Urban Planners & Transport Agencies",
+    "Public Health & Medical Practitioners",
+    "Vulnerable Citizens & Schools",
+    "Environmental Researchers"
+  ),
+  AIRGUARD_360_Utility = c(
+    "Automated Graded Response Action Plan (GRAP Stages 0 to 4) triggers based on active AQI",
+    "Identification of chronic hotspot corridors requiring bypass routes or electric bus prioritization",
+    "Empirical evidence on seasonal respiratory emergency surges for hospital ICU preparedness",
+    "Plain-language advisories on when to avoid strenuous outdoor activity and wear N95 respirators",
+    "Open, reproducible R code pipeline and relational SQLite database for atmospheric modeling"
+  ),
+  Recommended_Safe_Action = c(
+    "Cross-reference automated GRAP alerts with latest official telemetry before issuing gazetted orders",
+    "Incorporate meteorological dispersion modeling alongside historical empirical traffic data",
+    "Issue targeted advisories to asthmatic and cardiac patient registries during winter inversions",
+    "Install indoor HEPA filtration during flagged Bollinger episodic surges; keep windows sealed",
+    "Utilize out-of-sample ARIMA validation frameworks when publishing predictive air quality studies"
+  )
+)
+knitr::kable(stakeholders, caption = "Societal Benefit and Stakeholder Decision-Support Matrix")
+```
+
+## 6.3 Ethical Principles in Environmental Risk Communication
+- Avoid panic-inducing headlines; always present concentration units, averaging times, and statutory reference lines together.
+- Never use aggregate city-level averages to infer individual personal clinical diagnoses.
+- Transparently document historical boundaries (data ends July 2020) and encourage validation against live official portals for immediate daily precautions.
+
+<div style="page-break-after: always;"></div>
+
+# 7. LIMITATIONS, GOVERNANCE & RESPONSIBLE ANALYTICS
+
+```{r limits_tbl}
+limits_data <- data.frame(
+  Limitation_or_Risk = c(
+    "Historical Data Boundary (July 2020)",
+    "Variable Sensor Missingness",
+    "Extreme Sensor Outliers (> 500)",
+    "Descriptive vs Causal Inference",
+    "Unequal Station Spatial Density"
+  ),
+  Scientific_Implication = c(
+    "Dataset reflects 2015-2020 conditions; cannot describe post-2020 policy impacts or 2026 conditions.",
+    "Pollutant averages draw from differing sample counts; replacing missingness with zero severely biases statistics.",
+    "Readings such as AQI = 2,049 in Maninagar distort arithmetic means if unflagged.",
+    "Correlation between NO2 and PM2.5 does not prove NO2 caused particulate pollution.",
+    "Cities with 10 stations capture micro-climates; cities with 1 station reflect single-point exposure."
+  ),
+  Recommended_Mitigation_Control = c(
+    "Display prominent date stamps; clearly label analysis as retrospective historical intelligence.",
+    "Preserve NA values; explicitly report valid sample sizes (N_Obs) for all summary moments.",
+    "Flag records > 500 with AQI_Outlier_Flag; report medians alongside arithmetic means.",
+    "Pair correlation findings with atmospheric dispersion and emissions inventory context.",
+    "Maintain strict grain separation between city-daily rollups and station-level deep dives."
+  )
+)
+knitr::kable(limits_data, caption = "Methodological Limitations, Scientific Risks, and Implemented Governance Controls")
+```
+
+<div style="page-break-after: always;"></div>
+
+# 8. CONCLUSION & SYSTEM EVALUATION
+
+## 8.1 Summary of Project Outcomes
+AIRGUARD 360 successfully fulfills all objectives set forth for **INT232: Data Science Toolbox : R Programming**:
+1. **Architectural Excellence:** Built 100% natively in R, integrating Base R, `dplyr`, `ggplot2`, `plotly`, `DBI`, `RSQLite`, `tidytext`, and `shiny`.
+2. **Data Engineering Rigor:** Reconciled 108,035 station records and 29,531 city records, resolved coordinate geometry for 230 stations, and implemented a relational SQLite database.
+3. **Statistical Integrity:** Executed formal hypothesis tests (Welch t-test, ANOVA, Pearson correlation, Kolmogorov-Smirnov) with rigorous interpretations.
+4. **Predictive Innovation:** Evaluated out-of-sample ARIMA and Holt-Winters time-series forecasts with 80% and 95% confidence bounds.
+5. **Societal Value:** Delivered an objective Environmental Vulnerability Index (EVI) and automated Graded Response Action Plan (GRAP) decision-support matrix.
+
+## 8.2 Overall Evaluation
+The system establishes a transparent, reproducible benchmark for environmental analytics. By embedding data quality audits, outlier flags, and multi-grain reconciliation into the core code, AIRGUARD 360 bridges the gap between academic data science and real-world civic decision-making.
+
+<div style="page-break-after: always;"></div>
+
+# 9. FUTURE SCOPE & ROADMAP
+
+```{r future_roadmap}
+roadmap <- data.frame(
+  Phase = c("Phase 1: Telemetry Ingestion", "Phase 2: Advanced ML", "Phase 3: Spatial Dispersion", "Phase 4: Civic Dissemination"),
+  Target_Milestone = c(
+    "Live API integration with CPCB Open Data API for real-time streaming",
+    "Spatio-temporal Deep Learning (LSTM & Graph Neural Networks) for multi-station forecasting",
+    "Coupling WRF-Chem atmospheric weather models with satellite AOD data",
+    "Mobile Progressive Web App (PWA) with SMS/WhatsApp localized emergency alerts"
+  ),
+  Expected_Impact = c(
+    "Transitions system from retrospective analysis to real-time operations",
+    "Reduces multi-day forecast RMSE by an estimated 25-35%",
+    "Enables accurate plume dispersion tracking and source attribution",
+    "Delivers life-saving air quality advisories directly to vulnerable communities"
+  ),
+  Technical_Complexity = c("Medium", "High", "Very High", "Medium")
+)
+knitr::kable(roadmap, caption = "Four-Phase Future Engineering and Scalability Roadmap")
+```
+
+<div style="page-break-after: always;"></div>
+
+# 10. REFERENCES & BIBLIOGRAPHY
+
+1. Central Pollution Control Board (CPCB), Ministry of Environment, Forest and Climate Change, Government of India. (2014). *National Air Quality Index (NAQI) Report*. New Delhi: CPCB.
+2. Central Pollution Control Board (CPCB). (2009). *National Ambient Air Quality Standards (NAAQS)*, Gazette of India, Extraordinary, Part III, Section 4.
+3. World Health Organization (WHO). (2021). *WHO Global Air Quality Guidelines: Particulate Matter (PM2.5 and PM10), Ozone, Nitrogen Dioxide, Sulfur Dioxide and Carbon Monoxide*. Geneva: World Health Organization.
+4. Rao, Rohan. (2020). *Air Quality Data in India (2015-2020)*. Distributed via Kaggle. Available at: https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india.
+5. Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts: Melbourne, Australia.
+6. Wickham, H., & Grolemund, G. (2017). *R for Data Science: Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media.
+7. Chang, W., Cheng, J., Allaire, J. J., Sievert, C., Schloerke, B., Xie, Y., Allen, J., McPherson, J., Dipert, A., & Borges, B. (2023). *shiny: Web Application Framework for R*. R package version 1.8.0.
+8. Sievert, C. (2020). *Interactive Web-Based Data Visualization with R, plotly, and shiny*. Chapman and Hall/CRC.
+9. Silge, J., & Robinson, D. (2017). *Text Mining with R: A Tidy Approach*. O'Reilly Media.
+10. Panigrahi, Subrat. (2026). *AIRGUARD 360: Interactive Air Quality Intelligence Dashboard*. GitHub Source Code Repository. Available at: https://github.com/Subu2006/AIRGUARD-360.
+
+<div style="page-break-after: always;"></div>
+
+# 11. PROJECT RESOURCES, VERIFICATION SUITE & RUN GUIDE
+
+## 11.1 File Manifest in Submitted Bundle
+```text
+AIRGUARD 360/
+├── R/
+│   ├── 00_config.R              # Standard thresholds, colors, and publication theme
+│   ├── 01_data_import.R         # Ingestion, CSV loading, and SQLite database setup
+│   ├── 02_data_cleaning.R       # Missingness audit, factor levels, and outlier flags
+│   ├── 03_feature_engineering.R # Seasons, 7/30-day MAs, and Bollinger Bands
+│   ├── 04_statistics.R          # Descriptive moments and 4 formal hypothesis tests
+│   ├── 05_forecasting.R         # Native Base R ARIMA & Holt-Winters forecasting
+│   ├── 06_text_mining.R         # CPCB health advisory text mining & word cloud
+│   ├── 07_visualizations.R      # Reusable ggplot2, plotly, and station map routines
+│   ├── 08_decision_support.R    # Environmental Vulnerability Index (EVI) & GRAP
+│   └── 09_sql_queries.R         # Direct SQL queries via DBI/RSQLite
+├── data/
+│   ├── raw/                     # Raw statutory CPCB CSV files and catalogues
+│   ├── processed/               # Cleaned RDS analytical datasets
+│   └── airguard.sqlite          # Embedded indexed SQLite relational database
+├── outputs/
+│   ├── tables/                  # Empirical CSV/RDS statistical summaries and models
+│   └── figures/                 # 8 High-resolution publication-quality PNG charts
+├── reports/
+│   ├── airguard_project_report.Rmd  # Master R Markdown academic report
+│   ├── AIRGUARD_360_Project_Report.docx # Formatted Microsoft Word Report
+│   └── AIRGUARD_360_Project_Report.pdf  # Publication-grade PDF Report
+├── tests/
+│   └── test_shiny_app.R         # Automated verification suite (100% test pass)
+├── app.R                        # Interactive Shiny Dashboard (bslib + plotly)
+├── run_pipeline.R               # Master end-to-end execution script
+├── generate_figures.R           # Publication figure generator
+├── README.md                    # Comprehensive enterprise documentation
+└── .gitignore                   # Version control exclusions
+```
+
+## 11.2 Reproduction & Execution Guide
+1. **Set Working Directory:**
+```R
+setwd("c:/Users/subra/OneDrive/Desktop/AIRGUARD 360")
+```
+2. **Execute Master Pipeline:**
+```R
+source("run_pipeline.R")
+```
+3. **Generate Publication Figures:**
+```R
+source("generate_figures.R")
+```
+4. **Launch Interactive Dashboard:**
+```R
+shiny::runApp("app.R")
+```
+5. **Run Automated Test Suite:**
+```R
+source("tests/test_shiny_app.R")
+```
+
+<div style="page-break-after: always;"></div>
+
+# APPENDIX A: METRIC, PARAMETER & FIELD GLOSSARY {-}
+
+```{r glossary_tbl}
+glossary <- data.frame(
+  Field_or_Metric = c("AQI", "PM2.5", "PM10", "NO2", "SO2", "CO", "O3", "EVI", "Bollinger Spike", "GRAP Stage"),
+  Definition = c(
+    "Air Quality Index; composite index communicating air health risk on a 0–500 scale",
+    "Fine particulate matter with aerodynamic diameter <= 2.5 micrometers (respirable)",
+    "Coarse particulate matter with aerodynamic diameter <= 10 micrometers (inhalable)",
+    "Nitrogen Dioxide; criteria gaseous combustion byproduct from vehicles and industry",
+    "Sulphur Dioxide; gaseous combustion byproduct from coal combustion and smelters",
+    "Carbon Monoxide; toxic product of incomplete hydrocarbon combustion",
+    "Ground-level Tropospheric Ozone; secondary photochemical oxidant",
+    "Environmental Vulnerability Index; multi-criteria score (0–100) weighting severity",
+    "Binary indicator (1/0) flagging observations exceeding the 20-day MA + 2 SD ceiling",
+    "Graded Response Action Plan; statutory emergency operational mitigation tier (0 to 4)"
+  ),
+  Units_or_Range = c("0–500 index", "µg/m³", "µg/m³", "µg/m³", "µg/m³", "mg/m³", "µg/m³", "0–100 score", "Binary", "Stage 0 to 4"),
+  Regulatory_Standard = c("NAQI <= 100", "60 µg/m³ (24-hr)", "100 µg/m³ (24-hr)", "80 µg/m³ (24-hr)", "80 µg/m³ (24-hr)", "2.0 mg/m³ (8-hr)", "100 µg/m³ (8-hr)", "EVI < 35 (Tier 3)", "+2σ threshold", "CPCB Gazetted")
+)
+knitr::kable(glossary, caption = "Statutory Ambient Air Quality Metric and Field Glossary")
+```

@@ -66,10 +66,26 @@ word_freqs <- mine_environmental_text()
 write.csv(word_freqs, "outputs/tables/advisory_word_frequencies.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------------
-# 7. Hotspot Prioritization (Environmental Vulnerability Index)
+# 7. Hotspot Prioritization (Environmental Vulnerability Index) & Station Geography
 # ------------------------------------------------------------------------------
 hotspots_df <- compute_hotspot_priority_index(df_city_enriched)
 write.csv(hotspots_df, "outputs/tables/hotspot_vulnerability_ranking.csv", row.names = FALSE)
+
+# Compute Station Geographic Intelligence Summary
+station_geo <- cleaned_data$station_clean %>%
+  group_by(across(any_of(c("StationId", "StationName", "City", "State", "Latitude", "Longitude", "Status")))) %>%
+  summarise(
+    Total_Observations = n(),
+    Valid_AQI_Days     = sum(!is.na(AQI)),
+    Mean_AQI           = round(mean(AQI, na.rm = TRUE), 1),
+    Peak_AQI           = suppressWarnings(max(AQI, na.rm = TRUE)),
+    Mean_PM25          = round(mean(PM2.5, na.rm = TRUE), 1),
+    Mean_PM10          = round(mean(PM10, na.rm = TRUE), 1),
+    .groups = "drop"
+  )
+station_geo$Peak_AQI[!is.finite(station_geo$Peak_AQI)] <- NA
+write.csv(station_geo, "outputs/tables/station_geo_summary.csv", row.names = FALSE)
+
 
 # ------------------------------------------------------------------------------
 # 8. SQL Queries Execution Test

@@ -1,0 +1,9 @@
+Pollutant,FullName,ChemicalFormula,NAAQS_24hr_Limit,Unit,PrimarySource
+PM2.5,Fine Particulate Matter,PM2.5,60,ug/m3,Vehicular exhaust & combustion
+PM10,Coarse Particulate Matter,PM10,100,ug/m3,Road dust & construction
+NO2,Nitrogen Dioxide,NO2,80,ug/m3,Vehicular emissions & thermal plants
+SO2,Sulphur Dioxide,SO2,80,ug/m3,Thermal power plants & industrial fuel
+CO,Carbon Monoxide,CO,2,mg/m3,Incomplete vehicular/biomass combustion
+O3,Ozone,O3,100,ug/m3,Secondary photochemical reaction
+NH3,Ammonia,NH3,400,ug/m3,Agricultural emissions & waste
+Benzene,Benzene,C6H6,5,ug/m3,Industrial solvents & fuel evaporation
