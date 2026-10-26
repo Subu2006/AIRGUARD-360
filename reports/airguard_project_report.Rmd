@@ -944,8 +944,7 @@ AIRGUARD 360/
 │   ├── airguard_project_report.Rmd  # Master R Markdown academic report
 │   ├── AIRGUARD_360_Project_Report.docx # Formatted Microsoft Word Report
 │   ├── AIRGUARD_360_Project_Report.pdf  # Publication-grade PDF Report
-│   ├── AIRGUARD_360_Project_Report.html # Standalone interactive HTML report
-│   └── airguard_dashboard.html      # Compiled standalone R Markdown dashboard
+│   └── AIRGUARD_360_Project_Report.html # Standalone interactive HTML report
 ├── tests/
 │   └── test_shiny_app.R         # Automated verification suite (100% test pass)
 ├── app.R                        # Reactive Shiny Dashboard (bslib + plotly)

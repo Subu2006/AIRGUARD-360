@@ -109,10 +109,9 @@ if (file.exists("dashboard.Rmd")) {
     }
     rmarkdown::render("dashboard.Rmd", output_file = "dashboard.html", quiet = TRUE)
     if (file.exists("dashboard.html")) {
-      file.copy("dashboard.html", "reports/airguard_dashboard.html", overwrite = TRUE)
-      file.copy("dashboard.Rmd", "reports/airguard_dashboard.Rmd", overwrite = TRUE)
-      message(">> [SUCCESS] Interactive Dashboard compiled: dashboard.html & reports/airguard_dashboard.html")
+      message(">> [SUCCESS] Interactive R Markdown Dashboard compiled: dashboard.html")
     }
+
   }, error = function(e) {
     message(">> [NOTE] Optional dashboard render skipped: ", conditionMessage(e))
   })

@@ -149,8 +149,7 @@ Runs comprehensive automated checks across data integrity, SQLite tables, moving
 All formal academic deliverables are generated and maintained in the `reports/` folder:
 * **Microsoft Word Document:** [`reports/AIRGUARD_360_Project_Report.docx`](reports/AIRGUARD_360_Project_Report.docx) (Formatted strictly per university guidelines: Times New Roman, 1.5 line spacing, structured tables, and figure captions).
 * **Publication PDF Document:** [`reports/AIRGUARD_360_Project_Report.pdf`](reports/AIRGUARD_360_Project_Report.pdf) (Comprehensive 41-page technical report with executive summary, theory, EDA, 10 detailed dataset analyses, and glossary).
-* **Interactive HTML Report:** [`reports/AIRGUARD_360_Project_Report.html`](reports/AIRGUARD_360_Project_Report.html) (Self-contained interactive report with code folding and table of contents).
-* **Interactive HTML Dashboard:** [`reports/airguard_dashboard.html`](reports/airguard_dashboard.html) (Compiled standalone `flexdashboard` HTML).
+* **Interactive HTML Dashboard:** [`dashboard.html`](dashboard.html) (Compiled standalone `flexdashboard` HTML).
 * **Viva Defense Guide:** [`VIVA_PREPARATION_GUIDE.md`](VIVA_PREPARATION_GUIDE.md) (Complete viva question bank and model answers).
 * **LinkedIn Post Kit:** [`LINKEDIN_POST_KIT.md`](LINKEDIN_POST_KIT.md) (Ready-to-publish viral post copy and engagement plan).
 
