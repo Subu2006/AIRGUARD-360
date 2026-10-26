@@ -39,7 +39,7 @@ message("   [PASS] app.R successfully compiled into a valid Shiny App object.")
 # ------------------------------------------------------------------------------
 # Test 2: Check Processed Artifacts & Database
 # ------------------------------------------------------------------------------
-message("   [TEST 2] Verifying disk artifacts and SQLite relational tables...")
+message("   [TEST 2] Verifying disk artifacts, dashboards, and SQLite tables...")
 required_files <- c(
   "data/airguard.sqlite",
   "data/processed/airguard_clean.rds",
@@ -50,7 +50,11 @@ required_files <- c(
   "outputs/tables/station_geo_summary.csv",
   "outputs/tables/hypothesis_tests_summary.rds",
   "reports/AIRGUARD_360_Project_Report.docx",
-  "reports/AIRGUARD_360_Project_Report.pdf"
+  "reports/AIRGUARD_360_Project_Report.pdf",
+  "dashboard.Rmd",
+  "dashboard.html",
+  "VIVA_PREPARATION_GUIDE.md",
+  "LINKEDIN_POST_KIT.md"
 )
 
 for (f in required_files) {
@@ -59,7 +63,8 @@ for (f in required_files) {
 
 df_enriched <- readRDS("data/processed/airguard_enriched.rds")
 stopifnot(nrow(df_enriched) > 25000)
-message("   [PASS] All 10 core artifacts and reports verified (29,531 enriched records).")
+message("   [PASS] All 14 core artifacts, interactive dashboards, and reports verified.")
+
 
 # ------------------------------------------------------------------------------
 # Test 3: SQL Relational Operations

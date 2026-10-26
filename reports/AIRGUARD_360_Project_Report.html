@@ -3380,6 +3380,34 @@ the active metric.</li>
 absent upon startup, <code>app.R</code> automatically executes
 <code>run_pipeline.R</code> without crashing.</li>
 </ul>
+</div>
+<div id="standalone-interactive-r-markdown-dashboard-dashboard.rmd-dashboard.html" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> 5.3 Standalone
+Interactive R Markdown Dashboard (<code>dashboard.Rmd</code> /
+<code>dashboard.html</code>)</h2>
+<p>To fulfill the teacher’s requirement for an <strong>Interactive
+Dashboard using R Markdown</strong>, a dedicated, high-performance
+dashboard was engineered using the <code>flexdashboard</code>,
+<code>plotly</code>, and <code>DT</code> packages: - <strong>Zero-Server
+Portability:</strong> The dashboard compiles to a standalone,
+client-side HTML bundle (<code>dashboard.html</code> /
+<code>reports/airguard_dashboard.html</code>), operating seamlessly
+across all modern browsers without requiring an active R runtime or
+server process. - <strong>Structured Multi-Page Views:</strong> Six
+dedicated tabs mirror the syllabus: 1. <em>Overview &amp; Trends:</em>
+Dynamic KPI value boxes, temporal PM2.5 trajectories with 7-day moving
+averages, and CPCB category distributions. 2. <em>Geographic
+Intelligence &amp; Hotspots:</em> 230-station interactive CAAQMS map and
+composite Environmental Vulnerability Index (EVI) ranking table. 3.
+<em>Chemical Dynamics &amp; Volatility:</em> Stoichiometric particulate
+scatter plot with seasonal OLS regressions, correlation matrix, and
+20-day Bollinger volatility bands. 4. <em>Statistical Models &amp;
+Forecasts:</em> Formal hypothesis testing badges and 30-day ARIMA
+predictive ribbons with 80% and 95% confidence bounds. 5. <em>Decision
+Support &amp; Relational SQL:</em> Graded Response Action Plan (GRAP
+Stages 0 to 4) matrix, text-mined advisory terms, and embedded SQLite
+star schema summary. 6. <em>About &amp; Rubrics Compliance:</em>
+Traceable mapping across all assessment criteria.</p>
 <div style="page-break-after: always;">
 
 </div>
@@ -3697,17 +3725,23 @@ in Submitted Bundle</h2>
 │   └── airguard.sqlite          # Embedded indexed SQLite relational database
 ├── outputs/
 │   ├── tables/                  # Empirical CSV/RDS statistical summaries and models
-│   └── figures/                 # 8 High-resolution publication-quality PNG charts
+│   └── figures/                 # 9 High-resolution publication-quality PNG charts
 ├── reports/
 │   ├── airguard_project_report.Rmd  # Master R Markdown academic report
 │   ├── AIRGUARD_360_Project_Report.docx # Formatted Microsoft Word Report
-│   └── AIRGUARD_360_Project_Report.pdf  # Publication-grade PDF Report
+│   ├── AIRGUARD_360_Project_Report.pdf  # Publication-grade PDF Report
+│   ├── AIRGUARD_360_Project_Report.html # Standalone interactive HTML report
+│   └── airguard_dashboard.html      # Compiled standalone R Markdown dashboard
 ├── tests/
 │   └── test_shiny_app.R         # Automated verification suite (100% test pass)
-├── app.R                        # Interactive Shiny Dashboard (bslib + plotly)
+├── app.R                        # Reactive Shiny Dashboard (bslib + plotly)
+├── dashboard.Rmd                # Standalone Interactive R Markdown Dashboard (flexdashboard)
+├── dashboard.html               # Compiled zero-server interactive HTML dashboard
 ├── run_pipeline.R               # Master end-to-end execution script
 ├── generate_figures.R           # Publication figure generator
-├── README.md                    # Comprehensive enterprise documentation
+├── VIVA_PREPARATION_GUIDE.md    # 30 Technical Viva questions, pitch &amp; cheat-sheet
+├── LINKEDIN_POST_KIT.md         # Viral post copy drafts, hashtags &amp; 24-hr growth strategy
+├── README.md                    # Comprehensive enterprise documentation &amp; rubrics matrix
 └── .gitignore                   # Version control exclusions</code></pre>
 </div>
 <div id="reproduction-execution-guide" class="section level2" number="11.2">

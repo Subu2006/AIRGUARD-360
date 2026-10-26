@@ -93,8 +93,34 @@ write.csv(station_geo, "outputs/tables/station_geo_summary.csv", row.names = FAL
 sql_outputs <- run_syllabus_sql_queries("data/airguard.sqlite")
 saveRDS(sql_outputs, "outputs/tables/sql_query_outputs.rds")
 
+# ------------------------------------------------------------------------------
+# 9. Interactive R Markdown Dashboard Compilation
+# ------------------------------------------------------------------------------
+if (file.exists("dashboard.Rmd")) {
+  message(">> [DASHBOARD] Compiling Interactive R Markdown Dashboard (dashboard.html)...")
+  tryCatch({
+    pandoc_paths <- c(
+      "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools",
+      "C:/Program Files/RStudio/bin/pandoc",
+      "C:/Program Files/Pandoc"
+    )
+    for (p in pandoc_paths) {
+      if (dir.exists(p)) Sys.setenv(RSTUDIO_PANDOC = p)
+    }
+    rmarkdown::render("dashboard.Rmd", output_file = "dashboard.html", quiet = TRUE)
+    if (file.exists("dashboard.html")) {
+      file.copy("dashboard.html", "reports/airguard_dashboard.html", overwrite = TRUE)
+      file.copy("dashboard.Rmd", "reports/airguard_dashboard.Rmd", overwrite = TRUE)
+      message(">> [SUCCESS] Interactive Dashboard compiled: dashboard.html & reports/airguard_dashboard.html")
+    }
+  }, error = function(e) {
+    message(">> [NOTE] Optional dashboard render skipped: ", conditionMessage(e))
+  })
+}
+
 message("\n==================================================================")
 message(">> [SUCCESS] AIRGUARD 360 Full Analytical Pipeline Completed!")
 message(sprintf(">> Total City-Daily Records Processed: %d", nrow(df_city_enriched)))
 message(sprintf(">> Target Metros Evaluated: %d", n_distinct(df_city_enriched$City)))
 message("==================================================================")
+
