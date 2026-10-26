@@ -100,12 +100,17 @@ if (file.exists("dashboard.Rmd")) {
   message(">> [DASHBOARD] Compiling Interactive R Markdown Dashboard (dashboard.html)...")
   tryCatch({
     pandoc_paths <- c(
+      file.path(Sys.getenv("LOCALAPPDATA"), "Pandoc"),
+      file.path(Sys.getenv("APPDATA"), "Pandoc"),
       "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools",
       "C:/Program Files/RStudio/bin/pandoc",
       "C:/Program Files/Pandoc"
     )
     for (p in pandoc_paths) {
-      if (dir.exists(p)) Sys.setenv(RSTUDIO_PANDOC = p)
+      if (nzchar(p) && dir.exists(p)) {
+        Sys.setenv(RSTUDIO_PANDOC = p)
+        break
+      }
     }
     rmarkdown::render("dashboard.Rmd", output_file = "dashboard.html", quiet = TRUE)
     if (file.exists("dashboard.html")) {
