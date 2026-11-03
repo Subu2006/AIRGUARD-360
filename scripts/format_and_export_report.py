@@ -148,3 +148,4 @@ finally:
     word.Quit()
 
 print(">> [SUCCESS] Report formatting and PDF compilation successfully completed!")
+

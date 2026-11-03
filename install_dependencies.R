@@ -44,3 +44,4 @@ status_df <- data.frame(
 
 print(status_df)
 message(">> [AIRGUARD 360] Dependency setup complete. Ready to execute run_pipeline.R or app.R.")
+

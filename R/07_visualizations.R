@@ -443,3 +443,141 @@ plot_station_map <- function(station_data, interactive = TRUE) {
   }
 }
 
+# ------------------------------------------------------------------------------
+# 9. Advanced Visualizations: Multi-City Dual Trajectory Comparison Studio
+# ------------------------------------------------------------------------------
+plot_city_comparison <- function(df, city_a = "Delhi", city_b = "Bengaluru", 
+                                 target_var = "PM2.5", start_date = NULL, end_date = NULL, 
+                                 interactive = TRUE) {
+  sub_df <- df %>%
+    filter(as.character(City) %in% c(as.character(city_a), as.character(city_b)))
+  
+  if (!is.null(start_date)) sub_df <- sub_df %>% filter(Date >= as.Date(start_date))
+  if (!is.null(end_date))   sub_df <- sub_df %>% filter(Date <= as.Date(end_date))
+  
+  if (nrow(sub_df) == 0 || !(target_var %in% colnames(sub_df))) {
+    if (interactive) return(plot_empty_message("No comparative observations available for selected cities and dates."))
+    return(ggplot() + annotate("text", x = 1, y = 1, label = "No data") + theme_void())
+  }
+  
+  # Calculate 7-day rolling average per city
+  sub_df <- sub_df %>%
+    group_by(City) %>%
+    arrange(Date) %>%
+    mutate(
+      MA7 = round(zoo::rollapply(.data[[target_var]], width = 7, FUN = mean, fill = NA, align = "right", na.rm = TRUE), 1)
+    ) %>%
+    ungroup()
+  
+  limit_val <- NAAQS_LIMITS[[target_var]]
+  
+  p <- ggplot(sub_df, aes(x = Date, y = MA7, color = City)) +
+    geom_line(aes(y = .data[[target_var]], group = City), alpha = 0.25, linewidth = 0.4) +
+    geom_line(linewidth = 1.1) +
+    scale_color_manual(values = c("#0284C7", "#10B981", "#F59E0B", "#EF4444")) +
+    labs(
+      title = sprintf("Comparative Trajectory: %s vs %s (%s)", city_a, city_b, target_var),
+      subtitle = "Solid lines: 7-Day Moving Average | Faint lines: Raw Daily Readings",
+      x = "Date", y = sprintf("%s Concentration", target_var),
+      color = "City Hub"
+    ) +
+    theme_airguard()
+  
+  if (!is.null(limit_val)) {
+    p <- p + geom_hline(yintercept = limit_val, color = "#DC2626", linetype = "dashed", linewidth = 0.7)
+  }
+  
+  if (interactive) {
+    ggplotly(p, tooltip = c("x", "y", "color"))
+  } else {
+    p
+  }
+}
+
+# ------------------------------------------------------------------------------
+# 10. Advanced Visualizations: Multi-Pollutant Benchmark Radar / Profile
+# ------------------------------------------------------------------------------
+plot_pollutant_profile_bar <- function(df, city_a = "Delhi", city_b = "Bengaluru", interactive = TRUE) {
+  criteria_polls <- c("PM2.5", "PM10", "NO2", "SO2", "CO", "O3")
+  
+  sub_df <- df %>%
+    filter(as.character(City) %in% c(as.character(city_a), as.character(city_b)))
+  
+  if (nrow(sub_df) == 0) {
+    if (interactive) return(plot_empty_message("No data available for multi-pollutant profiling."))
+    return(ggplot() + annotate("text", x = 1, y = 1, label = "No data") + theme_void())
+  }
+  
+  prof_df <- sub_df %>%
+    group_by(City) %>%
+    summarise(across(any_of(criteria_polls), ~ mean(.x, na.rm = TRUE)), .groups = "drop") %>%
+    tidyr::pivot_longer(cols = -City, names_to = "Pollutant", values_to = "Mean_Concentration") %>%
+    mutate(
+      NAAQS_Limit = sapply(Pollutant, function(p) ifelse(!is.null(NAAQS_LIMITS[[p]]), NAAQS_LIMITS[[p]], NA_real_)),
+      Pct_of_NAAQS = round((Mean_Concentration / NAAQS_Limit) * 100, 1)
+    )
+  
+  p <- ggplot(prof_df, aes(x = Pollutant, y = Pct_of_NAAQS, fill = City)) +
+    geom_col(position = position_dodge(width = 0.75), width = 0.65) +
+    geom_hline(yintercept = 100, color = "#DC2626", linetype = "dashed", linewidth = 0.8) +
+    scale_fill_manual(values = c("#0284C7", "#10B981", "#F59E0B", "#EF4444")) +
+    labs(
+      title = sprintf("Criteria Pollutant Burden: %s vs %s (%% of CPCB Standard)", city_a, city_b),
+      subtitle = "Red Dashed Line = 100% of Statutory NAAQS Benchmark (Values > 100% exceed standard)",
+      x = "Atmospheric Parameter", y = "% of 24-hr NAAQS Standard", fill = "City Hub"
+    ) +
+    theme_airguard()
+  
+  if (interactive) {
+    ggplotly(p, tooltip = c("x", "y", "fill"))
+  } else {
+    p
+  }
+}
+
+# ------------------------------------------------------------------------------
+# 11. Policy Intervention & Scenario Projection Visualizer
+# ------------------------------------------------------------------------------
+plot_scenario_projection <- function(df, target_city = "Delhi", 
+                                     reduction_pct = 25, 
+                                     target_var = "PM2.5", 
+                                     interactive = TRUE) {
+  sub_df <- df %>%
+    filter(as.character(City) == as.character(target_city), !is.na(.data[[target_var]])) %>%
+    arrange(Date) %>%
+    tail(180) # Past 6 months of observed baseline
+  
+  if (nrow(sub_df) == 0) {
+    if (interactive) return(plot_empty_message("Insufficient baseline data for scenario projection."))
+    return(ggplot() + annotate("text", x = 1, y = 1, label = "No data") + theme_void())
+  }
+  
+  factor_multiplier <- 1 - (reduction_pct / 100)
+  sub_df <- sub_df %>%
+    mutate(
+      Baseline_MA = round(zoo::rollapply(.data[[target_var]], width = 7, FUN = mean, fill = NA, align = "right", na.rm = TRUE), 1),
+      Projected_MA = round(Baseline_MA * factor_multiplier, 1)
+    )
+  
+  p <- ggplot(sub_df, aes(x = Date)) +
+    geom_ribbon(aes(ymin = Projected_MA, ymax = Baseline_MA), fill = "#10B981", alpha = 0.25) +
+    geom_line(aes(y = Baseline_MA, color = "Historical Baseline"), linewidth = 1.0) +
+    geom_line(aes(y = Projected_MA, color = "Projected Intervention"), linewidth = 1.1, linetype = "solid") +
+    geom_hline(yintercept = NAAQS_LIMITS[[target_var]], color = "#DC2626", linetype = "dashed", linewidth = 0.7) +
+    scale_color_manual(values = c("Historical Baseline" = "#64748B", "Projected Intervention" = "#059669")) +
+    labs(
+      title = sprintf("Policy Simulation: %s Intervention on %s (%s)", target_city, target_var, paste0("-", reduction_pct, "%")),
+      subtitle = "Green Shaded Zone: Environmental & Human Exposure Burden Avoided | Red Dashed: NAAQS Limit",
+      x = "Date", y = sprintf("%s Concentration (ug/m3)", target_var),
+      color = "Trajectory"
+    ) +
+    theme_airguard()
+  
+  if (interactive) {
+    ggplotly(p, tooltip = c("x", "y", "color"))
+  } else {
+    p
+  }
+}
+
+
