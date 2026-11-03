@@ -1,7 +1,7 @@
 # ==============================================================================
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/05_forecasting.R
-# Purpose: Predictive Analytics using Base R Time Series (ARIMA & Holt-Winters)
+# Purpose: Predictive Analytics using Base R Time Series (ARIMA, Holt-Winters & Naive Baseline)
 # INT232 Syllabus Mapping: CO5 (Predictive Analytics Fundamentally), Unit IV (Math/Stats)
 # ==============================================================================
 
@@ -11,8 +11,8 @@ suppressPackageStartupMessages({
 
 #' Build and Validate Time-Series Forecasts for City-Level Air Quality
 #' 
-#' Uses native Base R stats::arima and stats::HoltWinters for maximum reproducibility,
-#' robustness, and zero external DLL dependency.
+#' Evaluates ARIMA, Holt-Winters, and a simple Naive Persistence Baseline
+#' using chronological holdout out-of-sample validation.
 #' 
 #' @param df Enriched city-daily data frame
 #' @param target_city Name of the city to model (default: "Delhi")
@@ -52,7 +52,7 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
   merged_ts_df <- full_dates %>%
     left_join(city_data %>% select(Date, Target = all_of(target_var)), by = "Date")
   
-  # Base R zoo-free linear interpolation
+  # Base R linear interpolation for missing daily gaps
   target_vals <- merged_ts_df$Target
   na_idx <- which(is.na(target_vals))
   if (length(na_idx) > 0) {
@@ -69,7 +69,7 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
   ts_full <- ts(merged_ts_df$Target_Clean, frequency = 7)
   
   # ----------------------------------------------------------------------------
-  # 2. Out-of-Sample Validation (Train-Test Split)
+  # 2. Out-of-Sample Chronological Holdout Validation (Train-Test Split)
   # ----------------------------------------------------------------------------
   n_total <- length(ts_full)
   n_test  <- min(as.integer(horizon), max(7L, floor(n_total * 0.15)))
@@ -78,16 +78,29 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
   ts_train <- ts(ts_full[1:n_train], frequency = 7)
   ts_test  <- as.numeric(ts_full[(n_train + 1):n_total])
   
+  # Robust Evaluation Metrics (including sMAPE to avoid near-zero inflation)
   calc_metrics <- function(actual, predicted) {
     err  <- actual - predicted
     mae  <- mean(abs(err), na.rm = TRUE)
     rmse <- sqrt(mean(err^2, na.rm = TRUE))
-    denom <- ifelse(actual <= 0, 1e-3, actual)
-    mape <- mean(abs(err / denom), na.rm = TRUE) * 100
-    c(MAE = round(mae, 2), RMSE = round(rmse, 2), MAPE = round(min(mape, 999), 1))
+    # Symmetric MAPE (sMAPE): bounded between 0% and 200%
+    denom_smape <- (abs(actual) + abs(predicted)) / 2
+    denom_smape <- ifelse(denom_smape < 1e-4, 1e-4, denom_smape)
+    smape <- mean(abs(err) / denom_smape, na.rm = TRUE) * 100
+    
+    # Standard MAPE with guardrail
+    denom_mape <- ifelse(abs(actual) < 1.0, 1.0, abs(actual))
+    mape <- mean(abs(err) / denom_mape, na.rm = TRUE) * 100
+    
+    c(MAE = round(mae, 2), RMSE = round(rmse, 2), MAPE = round(min(mape, 999), 1), sMAPE = round(smape, 1))
   }
   
-  # Model A: Base R Autoregressive Integrated Moving Average
+  # Baseline 0: Naive Persistence Model (Predicts last observed training value)
+  last_train_val <- as.numeric(tail(ts_train, 1))
+  pred_naive     <- rep(last_train_val, n_test)
+  metrics_naive  <- calc_metrics(ts_test, pred_naive)
+  
+  # Model A: Base R Autoregressive Integrated Moving Average (ARIMA)
   fit_arima_train <- tryCatch({
     stats::arima(ts_train, order = c(1, 1, 1))
   }, error = function(e1) {
@@ -105,8 +118,8 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
     pred_arima     <- pmax(0, as.numeric(pred_arima_obj$pred))
     metrics_arima  <- calc_metrics(ts_test, pred_arima)
   } else {
-    pred_arima    <- rep(mean(ts_train), n_test)
-    metrics_arima <- c(MAE = 999, RMSE = 999, MAPE = 999)
+    pred_arima    <- pred_naive
+    metrics_arima <- c(MAE = 999, RMSE = 999, MAPE = 999, sMAPE = 999)
   }
   
   # Model B: Base R Holt-Winters Exponential Smoothing
@@ -124,14 +137,18 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
       pred_hw    <- pmax(0, as.numeric(pred_hw_obj))
       metrics_hw <- calc_metrics(ts_test, pred_hw)
     } else {
-      metrics_hw <- c(MAE = 999, RMSE = 999, MAPE = 999)
+      metrics_hw <- c(MAE = 999, RMSE = 999, MAPE = 999, sMAPE = 999)
     }
   } else {
-    metrics_hw <- c(MAE = 999, RMSE = 999, MAPE = 999)
+    metrics_hw <- c(MAE = 999, RMSE = 999, MAPE = 999, sMAPE = 999)
   }
   
+  # Model Selection based on holdout RMSE
   best_model_name <- ifelse(metrics_arima["RMSE"] <= metrics_hw["RMSE"], "ARIMA", "Holt-Winters")
   if (metrics_arima["RMSE"] == 999 && metrics_hw["RMSE"] == 999) best_model_name <- "ARIMA"
+  
+  best_rmse <- min(metrics_arima["RMSE"], metrics_hw["RMSE"])
+  baseline_improvement_pct <- round(((metrics_naive["RMSE"] - best_rmse) / metrics_naive["RMSE"]) * 100, 1)
   
   # ----------------------------------------------------------------------------
   # 3. Final Model Training on Full Data & Future Projection
@@ -214,21 +231,26 @@ forecast_city_pollution <- function(df, target_city = "Delhi", target_var = "PM2
   combined_fc_df <- rbind(historical_df, forecast_df)
   
   metrics_summary <- data.frame(
-    Model_Selected = best_model_name,
-    ARIMA_RMSE     = metrics_arima["RMSE"],
-    ARIMA_MAE      = metrics_arima["MAE"],
-    ARIMA_MAPE     = metrics_arima["MAPE"],
-    HW_RMSE        = metrics_hw["RMSE"],
-    HW_MAE         = metrics_hw["MAE"],
-    HW_MAPE        = metrics_hw["MAPE"],
-    Test_Horizon   = n_test
+    Model_Selected       = best_model_name,
+    Baseline_Naive_RMSE  = metrics_naive["RMSE"],
+    Baseline_Naive_MAE   = metrics_naive["MAE"],
+    ARIMA_RMSE           = metrics_arima["RMSE"],
+    ARIMA_MAE            = metrics_arima["MAE"],
+    ARIMA_MAPE           = metrics_arima["MAPE"],
+    ARIMA_sMAPE          = metrics_arima["sMAPE"],
+    HW_RMSE              = metrics_hw["RMSE"],
+    HW_MAE               = metrics_hw["MAE"],
+    HW_MAPE              = metrics_hw["MAPE"],
+    HW_sMAPE             = metrics_hw["sMAPE"],
+    Baseline_Improv_Pct  = baseline_improvement_pct,
+    Test_Horizon         = n_test
   )
   
-  message(sprintf("   Best Model: %s (Test RMSE: %.2f, MAE: %.2f, MAPE: %.1f%%)",
+  message(sprintf("   Selected Architecture: %s (Test RMSE: %.2f vs Naive: %.2f | Improvement: %.1f%%)",
                   best_model_name,
                   metrics_summary[[paste0(ifelse(best_model_name == "ARIMA", "ARIMA", "HW"), "_RMSE")]],
-                  metrics_summary[[paste0(ifelse(best_model_name == "ARIMA", "ARIMA", "HW"), "_MAE")]],
-                  metrics_summary[[paste0(ifelse(best_model_name == "ARIMA", "ARIMA", "HW"), "_MAPE")]]))
+                  metrics_naive["RMSE"],
+                  baseline_improvement_pct))
   
   return(list(
     error       = FALSE,

@@ -214,7 +214,7 @@ plot_aqi_donut <- function(df, target_city = "Delhi") {
     count(AQI_Bucket) %>%
     mutate(
       Percentage = round((n / sum(n)) * 100, 1),
-      Color = AQI_COLOR_MAP[as.character(AQI_Bucket)]
+      Color = if (exists("AQI_COLOR_PALETTE")) AQI_COLOR_PALETTE[as.character(AQI_Bucket)] else "#1F77B4"
     )
   
   # Fallback color if any mapping missing

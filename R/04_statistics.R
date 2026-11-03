@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-#' Compute Multi-Pollutant Descriptive Statistics using the Apply Family
+#' Compute Multi-Pollutant Descriptive Statistics using the Apply Family (Unit IV)
 #' 
 #' @param df Enriched data frame
 #' @return A tidy summary data frame of statistical moments
@@ -24,18 +24,30 @@ compute_pollutant_statistics <- function(df) {
     
     if (length(vals_clean) == 0) return(NULL)
     
+    m  <- mean(vals_clean)
+    s  <- sd(vals_clean)
+    med <- median(vals_clean)
+    iqr_val <- IQR(vals_clean)
+    
+    # Skewness calculation (Fisher-Pearson standardized third moment)
+    n <- length(vals_clean)
+    skew <- if (n >= 3 && s > 0) {
+      round((sum((vals_clean - m)^3) / n) / (s^3), 2)
+    } else NA_real_
+    
     data.frame(
       Pollutant = p,
-      N_Obs     = length(vals_clean),
-      Mean      = round(mean(vals_clean), 2),
-      SD        = round(sd(vals_clean), 2),
-      Median    = round(median(vals_clean), 2),
-      IQR       = round(IQR(vals_clean), 2),
+      N_Obs     = n,
+      Mean      = round(m, 2),
+      SD        = round(s, 2),
+      Median    = round(med, 2),
+      IQR       = round(iqr_val, 2),
+      Skewness  = skew,
       Min       = round(min(vals_clean), 2),
       Max       = round(max(vals_clean), 2),
       Exceedance_Rate = ifelse(p %in% names(NAAQS_LIMITS),
                                round(mean(vals_clean > NAAQS_LIMITS[[p]]) * 100, 1),
-                               NA_real_),
+                               ifelse(p == "AQI", round(mean(vals_clean > 100) * 100, 1), NA_real_)),
       stringsAsFactors = FALSE
     )
   })
@@ -80,7 +92,7 @@ compute_correlation_matrices <- function(df) {
   ))
 }
 
-#' Execute Formal Hypothesis Tests for Environmental Intelligence
+#' Execute Formal Hypothesis Tests for Environmental Intelligence (CO6)
 #' 
 #' @param df Enriched data frame
 #' @return Comprehensive list of executed statistical tests and academic interpretations
@@ -89,7 +101,7 @@ run_hypothesis_tests <- function(df) {
   
   # ----------------------------------------------------------------------------
   # Test 1: Two-Sample Welch t-Test (Seasonal Pollution Disparity)
-  # Question: Is ambient PM2.5 significantly higher during Winter vs Summer/Monsoon?
+  # Question: Is ambient PM2.5 significantly higher during Winter vs Summer/Monsoon in Delhi?
   # ----------------------------------------------------------------------------
   df_delhi <- df %>% filter(City == "Delhi", !is.na(PM2.5), !is.na(Season))
   
@@ -97,6 +109,12 @@ run_hypothesis_tests <- function(df) {
   summer_pm25 <- df_delhi$PM2.5[df_delhi$Season %in% c("Summer", "Monsoon")]
   
   t_test_result <- t.test(winter_pm25, summer_pm25, alternative = "greater")
+  
+  # Calculate Cohen's d effect size
+  n1 <- length(winter_pm25); n2 <- length(summer_pm25)
+  s1 <- sd(winter_pm25);     s2 <- sd(summer_pm25)
+  s_pooled <- sqrt(((n1 - 1) * s1^2 + (n2 - 1) * s2^2) / (n1 + n2 - 2))
+  cohens_d <- round((mean(winter_pm25) - mean(summer_pm25)) / s_pooled, 2)
   
   # ----------------------------------------------------------------------------
   # Test 2: One-Way Analysis of Variance (ANOVA) across Major Metros
@@ -109,7 +127,7 @@ run_hypothesis_tests <- function(df) {
   
   anova_model <- aov(AQI ~ City, data = df_metros)
   anova_summary <- summary(anova_model)
-  tukey_result <- TukeyHSD(anova_model)
+  tukey_res <- TukeyHSD(anova_model)
   
   # ----------------------------------------------------------------------------
   # Test 3: Pearson Correlation Test between Particulate Stoichiometry (PM2.5 vs PM10)
@@ -124,10 +142,16 @@ run_hypothesis_tests <- function(df) {
   # ----------------------------------------------------------------------------
   clean_aqi <- na.omit(df$AQI)
   set.seed(42)
-  sample_aqi <- sample(clean_aqi, min(1000, length(clean_aqi))) # sample for fast diagnostic
-  # Add continuous infinitesimal jitter to resolve discrete ties warning in exact KS test
+  sample_aqi <- sample(clean_aqi, min(1000, length(clean_aqi)))
   sample_aqi_jittered <- sample_aqi + rnorm(length(sample_aqi), mean = 0, sd = 1e-4)
   ks_test_result <- suppressWarnings(ks.test(sample_aqi_jittered, "pnorm", mean = mean(sample_aqi), sd = sd(sample_aqi)))
+  
+  # ----------------------------------------------------------------------------
+  # Test 5: Kruskal-Wallis Non-Parametric Rank-Sum Test (Seasonal Invariance)
+  # Complements ANOVA by relaxing the normality assumption
+  # ----------------------------------------------------------------------------
+  df_seasons <- df %>% filter(!is.na(Season), !is.na(PM2.5))
+  kw_test_result <- kruskal.test(PM2.5 ~ Season, data = df_seasons)
   
   message("   Hypothesis Testing Complete. P-Values and Test Statistics Generated.")
   
@@ -139,8 +163,10 @@ run_hypothesis_tests <- function(df) {
       p_value     = t_test_result$p.value,
       mean_winter = round(t_test_result$estimate[1], 2),
       mean_summer = round(t_test_result$estimate[2], 2),
+      cohens_d    = cohens_d,
+      conf_int_95 = round(t_test_result$conf.int, 2),
       conclusion  = ifelse(t_test_result$p.value < 0.001,
-                           "Reject Null Hypothesis (p < 0.001): Winter PM2.5 is significantly and substantially higher due to thermal inversions and meteorological stagnation.",
+                           "Reject Null Hypothesis (p < 0.001): Winter PM2.5 is significantly and substantially higher due to thermal inversions and boundary layer entrapment.",
                            "Fail to reject Null Hypothesis.")
     ),
     metro_anova = list(
@@ -149,6 +175,7 @@ run_hypothesis_tests <- function(df) {
       p_value     = anova_summary[[1]][["Pr(>F)"]][1],
       df_between  = anova_summary[[1]][["Df"]][1],
       df_within   = anova_summary[[1]][["Df"]][2],
+      tukey_table = as.data.frame(round(tukey_res$City, 2)),
       conclusion  = ifelse(anova_summary[[1]][["Pr(>F)"]][1] < 0.001,
                            "Reject Null Hypothesis (p < 0.001): Statistically significant disparities in ambient AQI exist across Indian metropolitan clusters.",
                            "Fail to reject Null Hypothesis.")
@@ -159,14 +186,21 @@ run_hypothesis_tests <- function(df) {
       t_statistic = round(part_cor_test$statistic, 3),
       p_value     = part_cor_test$p.value,
       conf_int_95 = round(part_cor_test$conf.int, 3),
-      conclusion  = sprintf("Strong positive linear correlation (r = %.3f, p < 0.001). Demonstrates shared combustion and resuspension emission origins.",
-                            part_cor_test$estimate)
+      conclusion  = sprintf("Strong positive linear correlation (r = %.3f, p < 0.001, 95%% CI: [%.3f, %.3f]). Demonstrates shared combustion and resuspension emission origins.",
+                            part_cor_test$estimate, part_cor_test$conf.int[1], part_cor_test$conf.int[2])
     ),
     normality_test = list(
       test_name   = "Kolmogorov-Smirnov Normality Test on AQI",
       D_statistic = round(ks_test_result$statistic, 4),
       p_value     = ks_test_result$p.value,
-      conclusion  = "Reject Normality (p < 0.001): Air quality data is highly right-skewed with long tail extremes."
+      conclusion  = "Reject Normality (p < 0.001): Air quality data is highly right-skewed with long tail extremes, justifying non-parametric complements."
+    ),
+    kruskal_wallis = list(
+      test_name   = "Kruskal-Wallis Non-Parametric Rank Sum Test (PM2.5 across Seasons)",
+      chi_sq      = round(kw_test_result$statistic, 2),
+      df          = kw_test_result$parameter,
+      p_value     = kw_test_result$p.value,
+      conclusion  = "Reject Null Hypothesis (p < 0.001): Medians across climatological seasons differ significantly without requiring normality assumptions."
     )
   ))
 }

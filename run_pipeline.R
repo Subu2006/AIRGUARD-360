@@ -2,13 +2,14 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: run_pipeline.R
 # Purpose: Master Execution Pipeline (Data Ingestion, Cleaning, Modeling & Outputs)
+# Author: Subrat Panigrahi (Reg No: 26143073, Section: N1)
 # ==============================================================================
 
 message("==================================================================")
 message("          AIRGUARD 360 : MASTER PIPELINE EXECUTION                ")
 message("==================================================================")
 
-# Source all modular scripts
+# Source all modular scripts in strict architectural sequence
 source("R/00_config.R")
 source("R/01_data_import.R")
 source("R/02_data_cleaning.R")
@@ -20,111 +21,101 @@ source("R/07_visualizations.R")
 source("R/08_decision_support.R")
 source("R/09_sql_queries.R")
 
-# Ensure output directories exist
+# Ensure required directory structure exists
+dir.create("data/processed", showWarnings = FALSE, recursive = TRUE)
 dir.create("outputs/tables", showWarnings = FALSE, recursive = TRUE)
 dir.create("outputs/figures", showWarnings = FALSE, recursive = TRUE)
-dir.create("data/processed", showWarnings = FALSE, recursive = TRUE)
+dir.create("reports", showWarnings = FALSE, recursive = TRUE)
 
 # ------------------------------------------------------------------------------
-# 1. Ingest Raw Data & Initialize SQLite
+# STEP 1: Ingestion & Relational Database Creation
 # ------------------------------------------------------------------------------
-raw_data <- initialize_data_pipeline(raw_dir = "data/raw", db_path = "data/airguard.sqlite")
+raw_bundle <- initialize_data_pipeline(raw_dir = "data/raw", db_path = "data/airguard.sqlite")
 
 # ------------------------------------------------------------------------------
-# 2. Clean & Preprocess Data
+# STEP 2: Rigorous Cleaning & Grain Separation
 # ------------------------------------------------------------------------------
-cleaned_data <- clean_airguard_data(raw_data, output_dir = "data/processed")
+clean_bundle <- clean_airguard_data(raw_bundle, output_dir = "data/processed")
 
 # ------------------------------------------------------------------------------
-# 3. Engineer Features (Temporal, Volatility, Bollinger Bands)
+# STEP 3: Advanced Feature Engineering
 # ------------------------------------------------------------------------------
-df_city_enriched <- engineer_airguard_features(cleaned_data$city_daily)
-saveRDS(df_city_enriched, "data/processed/airguard_enriched.rds")
+df_city_daily <- clean_bundle$city_daily
+df_enriched   <- engineer_airguard_features(df_city_daily)
+saveRDS(df_enriched, "data/processed/airguard_enriched.rds")
 
 # ------------------------------------------------------------------------------
-# 4. Statistical Analysis & Hypothesis Testing
+# STEP 4: Descriptive Statistics & Hypothesis Testing (CO6, Unit IV)
 # ------------------------------------------------------------------------------
-stats_summary <- compute_pollutant_statistics(df_city_enriched)
-write.csv(stats_summary, "outputs/tables/pollutant_summary_stats.csv", row.names = FALSE)
+poll_stats <- compute_pollutant_statistics(df_enriched)
+write.csv(poll_stats, "outputs/tables/pollutant_summary_stats.csv", row.names = FALSE)
 
-cor_results <- compute_correlation_matrices(df_city_enriched)
-write.csv(as.data.frame(cor_results$correlation_matrix), "outputs/tables/correlation_matrix.csv")
+cor_bundle <- compute_correlation_matrices(df_enriched)
+write.csv(cor_bundle$correlation_matrix, "outputs/tables/correlation_matrix.csv")
 
-hypo_tests <- run_hypothesis_tests(df_city_enriched)
+hypo_tests <- run_hypothesis_tests(df_enriched)
 saveRDS(hypo_tests, "outputs/tables/hypothesis_tests_summary.rds")
 
 # ------------------------------------------------------------------------------
-# 5. Time-Series Predictive Analytics (Forecast on Delhi PM2.5)
+# STEP 5: Time-Series Modeling & Baseline Benchmarking (CO5)
 # ------------------------------------------------------------------------------
-fc_delhi <- forecast_city_pollution(df_city_enriched, target_city = "Delhi", target_var = "PM2.5", horizon = 30)
-saveRDS(fc_delhi, "outputs/tables/forecast_delhi_pm25.rds")
+forecast_res <- forecast_city_pollution(df_enriched, target_city = "Delhi", target_var = "PM2.5", horizon = 30)
+saveRDS(forecast_res, "outputs/tables/forecast_delhi_pm25.rds")
 
 # ------------------------------------------------------------------------------
-# 6. Text Mining & Advisory Corpus Analysis
+# STEP 6: Text Mining & Term Frequency Extraction (Unit V, VI)
 # ------------------------------------------------------------------------------
 word_freqs <- mine_environmental_text()
 write.csv(word_freqs, "outputs/tables/advisory_word_frequencies.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------------
-# 7. Hotspot Prioritization (Environmental Vulnerability Index) & Station Geography
+# STEP 7: Environmental Vulnerability Index (EVI) Hotspots (Decision Support)
 # ------------------------------------------------------------------------------
-hotspots_df <- compute_hotspot_priority_index(df_city_enriched)
-write.csv(hotspots_df, "outputs/tables/hotspot_vulnerability_ranking.csv", row.names = FALSE)
+evi_df <- compute_hotspot_priority_index(df_enriched)
+write.csv(evi_df, "outputs/tables/hotspot_vulnerability_ranking.csv", row.names = FALSE)
 
-# Compute Station Geographic Intelligence Summary
-station_geo <- cleaned_data$station_clean %>%
-  group_by(across(any_of(c("StationId", "StationName", "City", "State", "Latitude", "Longitude", "Status")))) %>%
+# Station Geospatial Summary Table for Map
+station_clean <- clean_bundle$station_clean
+station_geo_summary <- station_clean %>%
+  filter(!is.na(Latitude), !is.na(Longitude)) %>%
+  group_by(StationId, StationName, City, State, Latitude, Longitude, Status) %>%
   summarise(
     Total_Observations = n(),
     Valid_AQI_Days     = sum(!is.na(AQI)),
     Mean_AQI           = round(mean(AQI, na.rm = TRUE), 1),
-    Peak_AQI           = suppressWarnings(max(AQI, na.rm = TRUE)),
-    Mean_PM25          = round(mean(PM2.5, na.rm = TRUE), 1),
-    Mean_PM10          = round(mean(PM10, na.rm = TRUE), 1),
+    Peak_AQI           = if (all(is.na(AQI))) NA_real_ else round(max(AQI, na.rm = TRUE), 1),
+    Mean_PM25          = if (all(is.na(PM2.5))) NA_real_ else round(mean(PM2.5, na.rm = TRUE), 1),
+    Mean_PM10          = if (all(is.na(PM10))) NA_real_ else round(mean(PM10, na.rm = TRUE), 1),
     .groups = "drop"
   )
-station_geo$Peak_AQI[!is.finite(station_geo$Peak_AQI)] <- NA
-write.csv(station_geo, "outputs/tables/station_geo_summary.csv", row.names = FALSE)
-
+write.csv(station_geo_summary, "outputs/tables/station_geo_summary.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------------
-# 8. SQL Queries Execution Test
+# STEP 8: Relational SQL Queries Execution
 # ------------------------------------------------------------------------------
 sql_outputs <- run_syllabus_sql_queries("data/airguard.sqlite")
 saveRDS(sql_outputs, "outputs/tables/sql_query_outputs.rds")
 
 # ------------------------------------------------------------------------------
-# 9. Interactive R Markdown Dashboard Compilation
+# STEP 9: Generate High-Resolution Publication Figures
 # ------------------------------------------------------------------------------
-if (file.exists("dashboard.Rmd")) {
+source("generate_figures.R")
+
+# ------------------------------------------------------------------------------
+# STEP 10: Compile Standalone HTML Dashboard (if flexdashboard installed)
+# ------------------------------------------------------------------------------
+if (file.exists("dashboard.Rmd") && requireNamespace("rmarkdown", quietly = TRUE)) {
   message(">> [DASHBOARD] Compiling Interactive R Markdown Dashboard (dashboard.html)...")
   tryCatch({
-    pandoc_paths <- c(
-      file.path(Sys.getenv("LOCALAPPDATA"), "Pandoc"),
-      file.path(Sys.getenv("APPDATA"), "Pandoc"),
-      "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools",
-      "C:/Program Files/RStudio/bin/pandoc",
-      "C:/Program Files/Pandoc"
-    )
-    for (p in pandoc_paths) {
-      if (nzchar(p) && dir.exists(p)) {
-        Sys.setenv(RSTUDIO_PANDOC = p)
-        break
-      }
-    }
     rmarkdown::render("dashboard.Rmd", output_file = "dashboard.html", quiet = TRUE)
-    if (file.exists("dashboard.html")) {
-      message(">> [SUCCESS] Interactive R Markdown Dashboard compiled: dashboard.html")
-    }
-
+    message(">> [SUCCESS] Interactive R Markdown Dashboard compiled: dashboard.html")
   }, error = function(e) {
-    message(">> [NOTE] Optional dashboard render skipped: ", conditionMessage(e))
+    message(">> [WARNING] Dashboard compilation encountered an issue: ", e$message)
   })
 }
 
-message("\n==================================================================")
-message(">> [SUCCESS] AIRGUARD 360 Full Analytical Pipeline Completed!")
-message(sprintf(">> Total City-Daily Records Processed: %d", nrow(df_city_enriched)))
-message(sprintf(">> Target Metros Evaluated: %d", n_distinct(df_city_enriched$City)))
 message("==================================================================")
-
+message(">> [SUCCESS] AIRGUARD 360 Full Analytical Pipeline Completed!")
+message(sprintf(">> Total City-Daily Records Processed: %d", nrow(df_enriched)))
+message(sprintf(">> Target Metros Evaluated: %d", n_distinct(df_enriched$City)))
+message("==================================================================")
