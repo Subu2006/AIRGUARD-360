@@ -291,7 +291,7 @@ ui <- navbarPage(
             width = 8,
             card(
               card_header("Continuous Air Quality Trajectory & 7-Day Moving Average Smoother", class = "bg-light font-weight-bold"),
-              plotlyOutput("plot_trajectory", height = "390px"),
+              plotlyOutput("plot_trajectory", height = "470px"),
               card_footer(class = "text-muted small",
                           "Grey curve: Raw daily sensor readings | Blue curve: 7-day moving average | Red dashed line: Statutory CPCB NAAQS threshold.")
             )
@@ -299,8 +299,13 @@ ui <- navbarPage(
           column(
             width = 4,
             card(
+              card_header("Statutory NAQI Calibrated Gauge", class = "bg-light font-weight-bold"),
+              plotlyOutput("plot_aqi_gauge", height = "215px")
+            ),
+            card(
+              class = "mt-2",
               card_header("NAQI Severity Distribution (CPCB)", class = "bg-light font-weight-bold"),
-              plotlyOutput("plot_category_donut", height = "390px"),
+              plotlyOutput("plot_category_donut", height = "215px"),
               card_footer(class = "text-muted small",
                           "Proportion of monitored days categorized across 6 statutory NAQI tiers.")
             )
@@ -825,6 +830,12 @@ server <- function(input, output, session) {
   
   output$plot_category_donut <- renderPlotly({
     plot_aqi_donut(df = filtered_city_data(), target_city = input$sel_city)
+  })
+  
+  output$plot_aqi_gauge <- renderPlotly({
+    df <- filtered_city_data()
+    val <- mean(df$AQI, na.rm = TRUE)
+    plot_aqi_gauge(val, city_name = input$sel_city)
   })
   
   # ----------------------------------------------------------------------------

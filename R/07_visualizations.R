@@ -37,6 +37,60 @@ plot_empty_message <- function(message_text = "No observations available for the
     )
 }
 
+#' Calibrated CPCB Statutory Air Quality Speedometer / Gauge
+plot_aqi_gauge <- function(aqi_val, city_name = "Selected City") {
+  if (is.null(aqi_val) || is.na(aqi_val) || is.nan(aqi_val)) {
+    return(plot_empty_message("No AQI reading available."))
+  }
+  
+  val <- min(500, max(0, round(as.numeric(aqi_val), 1)))
+  
+  tier_col <- if (val <= 50) "#00B050" 
+              else if (val <= 100) "#92D050" 
+              else if (val <= 200) "#EAB308" 
+              else if (val <= 300) "#F97316" 
+              else if (val <= 400) "#EF4444" 
+              else "#7030A0"
+              
+  tier_name <- if (val <= 50) "Good" 
+               else if (val <= 100) "Satisfactory" 
+               else if (val <= 200) "Moderate" 
+               else if (val <= 300) "Poor" 
+               else if (val <= 400) "Very Poor" 
+               else "Severe"
+
+  plot_ly(
+    type = "indicator",
+    mode = "gauge+number",
+    value = val,
+    title = list(text = paste0("<b>", city_name, " Ambient AQI</b><br><span style='font-size:12px;color:", tier_col, ";font-weight:bold;'>", tier_name, "</span>"), font = list(size = 13)),
+    gauge = list(
+      axis = list(range = list(0, 500), tickwidth = 1, tickcolor = "#475569"),
+      bar = list(color = tier_col, thickness = 0.3),
+      bgcolor = "#F8FAFC",
+      borderwidth = 1,
+      bordercolor = "#E2E8F0",
+      steps = list(
+        list(range = c(0, 50), color = "#DCFCE7"),
+        list(range = c(50, 100), color = "#FEF9C3"),
+        list(range = c(100, 200), color = "#FEF08A"),
+        list(range = c(200, 300), color = "#FED7AA"),
+        list(range = c(300, 400), color = "#FECACA"),
+        list(range = c(400, 500), color = "#E9D5FF")
+      ),
+      threshold = list(
+        line = list(color = "#DC2626", width = 3),
+        thickness = 0.75,
+        value = 300
+      )
+    )
+  ) %>%
+    layout(
+      margin = list(t = 40, b = 20, l = 25, r = 25),
+      font = list(family = "Inter, sans-serif")
+    )
+}
+
 # ------------------------------------------------------------------------------
 # 1. Basic Visualizations: Temporal Trend Line Chart
 # ------------------------------------------------------------------------------
