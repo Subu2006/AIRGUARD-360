@@ -2,14 +2,14 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/04_statistics.R
 # Purpose: Rigorous Statistical Analysis, Apply Family, and Formal Hypothesis Testing
-# INT232 Syllabus Mapping: CO6 (Statistical Tests), Unit II (Matrices), Unit IV (Apply Family, Math)
+# Architecture: Multi-Pollutant Descriptive Statistics, Matrices & Formal Hypothesis Testing
 # ==============================================================================
 
 suppressPackageStartupMessages({
   library(dplyr)
 })
 
-#' Compute Multi-Pollutant Descriptive Statistics using the Apply Family (Unit IV)
+#' Compute Multi-Pollutant Descriptive Statistics using Functional Vectorization
 #' 
 #' @param df Enriched data frame
 #' @return A tidy summary data frame of statistical moments
@@ -17,7 +17,7 @@ compute_pollutant_statistics <- function(df) {
   pollutants <- c("PM2.5", "PM10", "NO2", "SO2", "CO", "O3", "NH3", "AQI")
   available_polls <- intersect(pollutants, colnames(df))
   
-  # Unit IV requirement: Apply family of functions (sapply/lapply)
+  # Functional apply family for vectorized moments computation
   stats_list <- lapply(available_polls, function(p) {
     vals <- df[[p]]
     vals_clean <- vals[!is.na(vals)]
@@ -55,7 +55,7 @@ compute_pollutant_statistics <- function(df) {
   do.call(rbind, stats_list)
 }
 
-#' Compute Multi-Pollutant Correlation Matrix & P-Values (Unit II: Matrices)
+#' Compute Multi-Pollutant Correlation Matrix & P-Values
 #' 
 #' @param df Enriched data frame
 #' @return A list containing correlation matrix and p-value matrix
@@ -65,7 +65,7 @@ compute_correlation_matrices <- function(df) {
   
   sub_df <- df[, available_polls]
   
-  # Unit II: Base R matrix operations
+  # Base R matrix operations
   cor_mat <- cor(sub_df, use = "pairwise.complete.obs", method = "pearson")
   
   # Compute pairwise p-values using base R cor.test
@@ -92,7 +92,7 @@ compute_correlation_matrices <- function(df) {
   ))
 }
 
-#' Execute Formal Hypothesis Tests for Environmental Intelligence (CO6)
+#' Execute Formal Hypothesis Tests for Environmental Intelligence
 #' 
 #' @param df Enriched data frame
 #' @return Comprehensive list of executed statistical tests and academic interpretations

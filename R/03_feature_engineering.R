@@ -2,8 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/03_feature_engineering.R
 # Purpose: Feature Engineering, Temporal Lags, Moving Averages & Bollinger Bands
-# INT232 Syllabus Mapping: Unit IV (Dates and timestamps, Math functions, dplyr, pipe)
-#                          Unit VI (Bollinger Band analysis for air quality volatility)
+# Architecture: Feature Engineering, Temporal Decompositions & Volatility Modeling
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -57,7 +56,7 @@ engineer_airguard_features <- function(df_city_daily) {
   df_enriched <- df_city_daily %>%
     arrange(City, Date) %>%
     mutate(
-      # 1. Calendar and Temporal Decompositions (Unit IV)
+      # 1. Calendar and Temporal Decompositions
       Year        = lubridate::year(Date),
       Month       = lubridate::month(Date, label = TRUE, abbr = TRUE),
       Month_Num   = lubridate::month(Date),
@@ -83,7 +82,7 @@ engineer_airguard_features <- function(df_city_daily) {
       O3_Exceeded    = ifelse(!is.na(O3)    & O3 > 100, 1L, 0L),
       AQI_Exceeded   = ifelse(!is.na(AQI)   & AQI > 100, 1L, 0L)
     ) %>%
-    # 4. Rolling Statistics and Bollinger Bands (Unit VI Syllabus requirement)
+    # 4. Rolling Statistics and Bollinger Bands (Atmospheric Volatility)
     group_by(City) %>%
     mutate(
       # 7-day and 30-day Moving Averages for all criteria pollutants

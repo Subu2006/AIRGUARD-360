@@ -1,10 +1,9 @@
 # ==============================================================================
-# AIRGUARD 360: Enterprise Air Quality Intelligence & Decision-Support System
+# AIRGUARD 360: National Air Quality Intelligence & Decision-Support System
 # File: app.R
-# Technology: 100% Native R (Shiny + bslib + ggplot2 + plotly + DT + RSQLite)
-# Course: INT232 Data Science Toolbox : R Programming
-# Author: Subrat Panigrahi (Reg No: 26143073, Section: N1)
-# Under the Guidance of: Mr. Jaffar Amin Chacket (Associate Professor, CSE/IT, LPU)
+# Architecture: 100% Native R (Shiny + bslib + ggplot2 + plotly + leaflet + DT + RSQLite)
+# Author & Architect: Subrat Panigrahi (B.Tech Computer Science & Engineering)
+# Open-Source Repository: https://github.com/Subu2006/AIRGUARD-360
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -222,9 +221,14 @@ custom_css <- "
 # ------------------------------------------------------------------------------
 ui <- navbarPage(
   title = div(
-    tags$span(style = "color: #38BDF8; font-weight: 900; margin-right: 4px;", "AIRGUARD"),
-    tags$span(style = "color: #FFFFFF; font-weight: 300;", "360"),
-    tags$span(style = "font-size: 0.70rem; color: #94A3B8; font-weight: 400; margin-left: 8px;", "PRO v4.0")
+    style = "display: flex; align-items: center;",
+    tags$span(style = "color: #38BDF8; font-weight: 900; letter-spacing: -0.02em; font-size: 1.25rem;", "AIRGUARD"),
+    tags$span(style = "color: #FFFFFF; font-weight: 300; font-size: 1.25rem; margin-left: 3px;", "360"),
+    tags$span(
+      class = "badge rounded-pill ms-2",
+      style = "background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #7DD3FC; font-size: 0.70rem; font-weight: 600; padding: 4px 10px;",
+      "Environmental Intelligence"
+    )
   ),
   theme = airguard_theme,
   header = tags$head(tags$style(HTML(custom_css))),
@@ -239,12 +243,12 @@ ui <- navbarPage(
       fluidRow(
         column(
           width = 8,
-          h4("AIRGUARD 360 : National Air Quality Intelligence & Regulatory Compliance System"),
-          p("Course: INT232 Data Science Toolbox (R Programming) | Lovely Professional University"),
+          h4("AIRGUARD 360 : National Air Quality Intelligence & Decision-Support System"),
+          p("Central Pollution Control Board (CPCB) Continuous Ambient Air Quality Telemetry & Analytics Platform"),
           div(style = "margin-top: 8px;",
               span(class = "status-capsule",
                    tags$span(class = "status-dot"),
-                   "Retrospective Historical Mode : CPCB CAAQMS Multi-Year Archive (2015-01-01 to 2020-07-01)")
+                   "Continuous Monitoring Telemetry : CPCB CAAQMS Multi-Year Archive (2015-01-01 to 2020-07-01)")
           )
         ),
         column(
@@ -277,6 +281,12 @@ ui <- navbarPage(
           ),
           hr(),
           uiOutput("filter_status_ui"),
+          hr(),
+          h6(class = "font-weight-bold text-dark mb-2", style = "font-size: 0.82rem;", "Direct Data Export:"),
+          div(class = "d-grid gap-2 mb-2",
+              downloadButton("download_city_data", "Export Filtered Telemetry (CSV)", class = "btn-outline-primary btn-sm", style = "font-size: 0.72rem; text-align: left;"),
+              downloadButton("download_hotspots", "Export Hotspot Ranking (CSV)", class = "btn-outline-success btn-sm", style = "font-size: 0.72rem; text-align: left;")
+          ),
           p(class = "text-muted small mt-2",
             "Adjusting parameters dynamically triggers reactive recalculations across all 8 criteria pollutants and compliance boundaries.")
         )
@@ -515,7 +525,7 @@ ui <- navbarPage(
     title = tagList(icon("chart-area"), "Forecasting & Volatility"),
     div(
       class = "system-banner",
-      h4("Predictive Time-Series Forecasting (CO5) & Atmospheric Volatility Modeling"),
+      h4("Predictive Atmospheric Time-Series Forecasting & Volatility Modeling"),
       p("Autoregressive Integrated Moving Average (ARIMA) and Holt-Winters Exponential Smoothing evaluated against a Naive Persistence Baseline.")
     ),
     fluidRow(
@@ -525,7 +535,7 @@ ui <- navbarPage(
           card_header(
             div(
               class = "d-flex justify-content-between align-items-center",
-              span("Out-of-Sample Predictive Forecast (CO5: ARIMA & Holt-Winters)"),
+              span("Out-of-Sample Predictive Forecast (ARIMA vs. Exponential Smoothing)"),
               div(
                 class = "d-flex gap-2",
                 selectInput("fc_pollutant", NULL, choices = c("PM2.5", "PM10", "AQI"), selected = "PM2.5", width = "110px"),
@@ -573,7 +583,7 @@ ui <- navbarPage(
       column(
         width = 6,
         card(
-          card_header("Inter-Pollutant Pearson Correlation Matrix (Unit II Matrices)", class = "bg-light font-weight-bold"),
+          card_header("Inter-Pollutant Pearson Correlation Matrix", class = "bg-light font-weight-bold"),
           plotlyOutput("plot_heatmap", height = "390px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Pairwise-complete Pearson correlations across 8 criteria atmospheric parameters.")
@@ -594,7 +604,7 @@ ui <- navbarPage(
         width = 6,
         card(
           class = "mt-3",
-          card_header("Statutory Advisory Word Frequency Cloud (Unit V & VI)", class = "bg-light font-weight-bold"),
+          card_header("Statutory Advisory Word Frequency Cloud", class = "bg-light font-weight-bold"),
           plotOutput("plot_wordcloud", height = "330px"),
           card_footer(class = "text-muted small",
                       "Tokenized term frequencies extracted from CPCB and WHO statutory mitigation text.")
@@ -607,7 +617,7 @@ ui <- navbarPage(
           card_header(
             div(
               class = "d-flex justify-content-between align-items-center",
-              span("Relational SQLite Console (Unit III SQL with R - Practical 7)"),
+              span("Enterprise Relational SQL Studio (Direct SQLite Engine)"),
               selectInput("sel_sql_preset", NULL,
                           choices = c(
                             "Annual City Summary (GROUP BY & AVG)" = "annual",
@@ -623,56 +633,12 @@ ui <- navbarPage(
                       "Executed directly against embedded SQLite database (data/airguard.sqlite) using DBI and RSQLite.")
         )
       )
-    )
-  ),
-  
-  # ----------------------------------------------------------------------------
-  # TAB 8: ABOUT, SYLLABUS MAPPING & EXPORT
-  # ----------------------------------------------------------------------------
-  tabPanel(
-    title = tagList(icon("graduation-cap"), "Academic Center"),
-    div(
-      class = "system-banner",
-      h4("AIRGUARD 360 : Project Architecture, Academic Alignment & Data Export"),
-      p("INT232: Data Science Toolbox — R Programming | Lovely Professional University")
-    ),
-    fluidRow(
-      column(
-        width = 6,
-        card(
-          card_header("Project Information & Student Credentials", class = "bg-light font-weight-bold"),
-          tableOutput("about_project_table"),
-          hr(),
-          h6(class = "font-weight-bold", "Core Engineering Highlights:"),
-          tags$ul(
-            tags$li("100% Native R Implementation: Built with Shiny, bslib, ggplot2, plotly, DBI, RSQLite, and forecast."),
-            tags$li("Strict Relational Grain Integrity: Separates fact_station_day (108,035 rows) from fact_city_day (29,531 rows)."),
-            tags$li("Empirically Reconciled: Zero invented metrics; all numbers agree with underlying CPCB observations."),
-            tags$li("Reproducible Master Pipeline: Complete end-to-end automation via run_pipeline.R and test_shiny_app.R.")
-          ),
-          hr(),
-          h6(class = "font-weight-bold", "Direct Data & Export Center:"),
-          div(class = "d-flex gap-2 mt-2",
-              downloadButton("download_city_data", "Export Filtered City Data (CSV)", class = "btn-outline-primary btn-sm"),
-              downloadButton("download_hotspots", "Export Hotspot Ranking (CSV)", class = "btn-outline-success btn-sm")
-          )
-        )
-      ),
-      column(
-        width = 6,
-        card(
-          card_header("INT232 Syllabus & Course Outcome (CO) Alignment", class = "bg-light font-weight-bold"),
-          tableOutput("about_syllabus_table"),
-          card_footer(class = "text-muted small",
-                      "Maps practical R programming concepts directly to course learning objectives and syllabus units.")
-        )
-      )
     ),
     div(
       class = "footer-bar",
       fluidRow(
-        column(6, "AIRGUARD 360 © 2026 Subrat Panigrahi | Academic Submission for INT232 (LPU)"),
-        column(6, div(style = "text-align: right;", "GitHub: Subu2006/AIRGUARD-360 | Branch: feature/airguard-audit-and-enhancement"))
+        column(6, "AIRGUARD 360 © 2026 Subrat Panigrahi | National Air Quality Intelligence & Decision-Support System"),
+        column(6, div(style = "text-align: right;", "GitHub: Subu2006/AIRGUARD-360 | Open-Source Environmental Data Architecture"))
       )
     )
   )
@@ -1262,38 +1228,8 @@ server <- function(input, output, session) {
   })
   
   # ----------------------------------------------------------------------------
-  # Tab 8: About & Course Alignment
+  # Data Export Handlers
   # ----------------------------------------------------------------------------
-  output$about_project_table <- renderTable({
-    data.frame(
-      Property = c("Application Name", "Academic Course", "Student Candidate", "Registration No.", 
-                   "Section / Program", "Faculty Supervisor", "Department / School", "University"),
-      Details = c("AIRGUARD 360 (v4.0 Enterprise Intelligence)", 
-                  "INT232: Data Science Toolbox — R Programming",
-                  "Subrat Panigrahi", "26143073", "N1 / B.Tech Computer Science & Engineering",
-                  "Mr. Jaffar Amin Chacket (Associate Professor)",
-                  "Lovely School of Computer Science & Engineering",
-                  "Lovely Professional University (LPU), Punjab"),
-      stringsAsFactors = FALSE
-    )
-  }, striped = TRUE, hover = TRUE, bordered = TRUE)
-  
-  output$about_syllabus_table <- renderTable({
-    data.frame(
-      Unit = c("Unit I", "Unit II", "Unit III", "Unit IV", "Unit V", "Unit VI"),
-      Curriculum_Topic = c("R Environment & Setup", "Data Structures & Vectors", "Functions & Control Flow", 
-                           "Data Wrangling & Databases", "Data Visualization Suite", "Advanced Analytics & Forecasting"),
-      AIRGUARD_Implementation = c("R/00_config.R, install_dependencies.R, DESCRIPTION",
-                                  "R/01_data_cleaning.R, S3 Dataframes, Categorical Factors",
-                                  "R/04_statistics.R, R/08_decision_support.R, Vectorized Logic",
-                                  "R/03_database_operations.R, dplyr, RSQLite, Star Schema",
-                                  "R/07_visualizations.R, ggplot2, Plotly, Donut, Wordcloud",
-                                  "R/05_forecasting.R, ARIMA vs Naive, Bollinger Bands, Shiny app.R"),
-      stringsAsFactors = FALSE
-    )
-  }, striped = TRUE, hover = TRUE, bordered = TRUE)
-  
-  # Export Handlers
   output$download_city_data <- downloadHandler(
     filename = function() { paste0("AIRGUARD360_", input$sel_city, "_Data.csv") },
     content = function(file) {

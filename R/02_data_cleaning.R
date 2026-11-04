@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/02_data_cleaning.R
 # Purpose: Rigorous Data Cleaning, Missing Data Auditing, and Normalization
-# INT232 Syllabus Mapping: Unit II (Data Frames, Factors), Unit IV (dplyr, tidyr, pipe, handling missing data)
+# Architecture: Data Cleaning, Missing Data Auditing & Grain Segregation
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -40,7 +40,7 @@ clean_airguard_data <- function(raw_data, output_dir = "data/processed") {
   df_st_day$Date <- as.Date(df_st_day$Date)
   
   # ----------------------------------------------------------------------------
-  # Step 2: Relational Join with Spatial Dimension (Unit II & Unit IV)
+  # Step 2: Relational Join with Spatial Dimension
   # ----------------------------------------------------------------------------
   message("   Joining fact table with station geographic dimension...")
   df_joined <- df_st_day %>%
@@ -51,7 +51,7 @@ clean_airguard_data <- function(raw_data, output_dir = "data/processed") {
     )
   
   # ----------------------------------------------------------------------------
-  # Step 3: AQI Bucket Imputation and Factor Encoding (Unit II: Factors)
+  # Step 3: AQI Bucket Imputation and Factor Encoding
   # ----------------------------------------------------------------------------
   # CPCB Official AQI Categories
   bucket_levels <- c("Good", "Satisfactory", "Moderate", "Poor", "Very Poor", "Severe")
@@ -76,7 +76,7 @@ clean_airguard_data <- function(raw_data, output_dir = "data/processed") {
     select(-AQI_Bucket_Clean)
   
   # ----------------------------------------------------------------------------
-  # Step 4: Missing Data Quality Audit (INT232 Practical 9: Data Wrangling)
+  # Step 4: Missing Data Quality Audit & Completeness Profiling
   # ----------------------------------------------------------------------------
   total_records <- nrow(df_joined)
   missing_summary <- sapply(df_joined, function(x) sum(is.na(x)))

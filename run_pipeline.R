@@ -45,7 +45,7 @@ df_enriched   <- engineer_airguard_features(df_city_daily)
 saveRDS(df_enriched, "data/processed/airguard_enriched.rds")
 
 # ------------------------------------------------------------------------------
-# STEP 4: Descriptive Statistics & Hypothesis Testing (CO6, Unit IV)
+# STEP 4: Descriptive Statistics & Hypothesis Testing Engine
 # ------------------------------------------------------------------------------
 poll_stats <- compute_pollutant_statistics(df_enriched)
 write.csv(poll_stats, "outputs/tables/pollutant_summary_stats.csv", row.names = FALSE)
@@ -57,13 +57,13 @@ hypo_tests <- run_hypothesis_tests(df_enriched)
 saveRDS(hypo_tests, "outputs/tables/hypothesis_tests_summary.rds")
 
 # ------------------------------------------------------------------------------
-# STEP 5: Time-Series Modeling & Baseline Benchmarking (CO5)
+# STEP 5: Time-Series Modeling & Baseline Benchmarking Engine
 # ------------------------------------------------------------------------------
 forecast_res <- forecast_city_pollution(df_enriched, target_city = "Delhi", target_var = "PM2.5", horizon = 30)
 saveRDS(forecast_res, "outputs/tables/forecast_delhi_pm25.rds")
 
 # ------------------------------------------------------------------------------
-# STEP 6: Text Mining & Term Frequency Extraction (Unit V, VI)
+# STEP 6: Text Mining & Term Frequency Extraction Engine
 # ------------------------------------------------------------------------------
 word_freqs <- mine_environmental_text()
 write.csv(word_freqs, "outputs/tables/advisory_word_frequencies.csv", row.names = FALSE)

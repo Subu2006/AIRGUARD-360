@@ -2,7 +2,7 @@
 # AIRGUARD 360: Automated Comprehensive Verification Test Suite
 # File: tests/test_shiny_app.R
 # Purpose: Exhaustive testing of Shiny app, modular functions, plots, models, and data
-# INT232 Syllabus Mapping: All Units (I to VI), Course Outcomes CO1 to CO6
+# Architecture: End-to-End Test Harness & Regression Suite
 # ==============================================================================
 
 message(">> [TEST SUITE] Initiating Comprehensive AIRGUARD 360 Verification...")
@@ -69,7 +69,7 @@ if (length(missing_artifacts) > 0) {
 message(sprintf("   [PASS] All %d core artifacts, interactive dashboards, and reports verified.", length(required_artifacts)))
 
 # ------------------------------------------------------------------------------
-# Test 3: Verify Embedded SQLite Relational Operations (Unit III Practical 7)
+# Test 3: Verify Embedded SQLite Relational Operations Engine
 # ------------------------------------------------------------------------------
 message("   [TEST 3] Testing SQLite relational queries...")
 sql_res <- run_syllabus_sql_queries("data/airguard.sqlite")
@@ -86,7 +86,7 @@ message(sprintf("   [PASS] SQLite database queries verified: %s station records,
                 format(st_count$n, big.mark = ","), format(city_count$n, big.mark = ",")))
 
 # ------------------------------------------------------------------------------
-# Test 4: Verify Multi-Pollutant Descriptive Moments & Apply Family (Unit IV)
+# Test 4: Verify Multi-Pollutant Descriptive Moments & Statistical Functions
 # ------------------------------------------------------------------------------
 message("   [TEST 4] Testing statistical moments and apply family functions...")
 df_enriched <- readRDS("data/processed/airguard_enriched.rds")
@@ -113,7 +113,7 @@ stopifnot(
 message("   [PASS] All 5 formal hypothesis tests passed with robust p-values and effect sizes.")
 
 # ------------------------------------------------------------------------------
-# Test 6: Verify Advanced Visualizations Suite (Unit VI)
+# Test 6: Verify Advanced Visualizations Suite
 # ------------------------------------------------------------------------------
 message("   [TEST 6] Testing basic and advanced visualization modules...")
 p1 <- plot_temporal_trend(df_enriched, target_city = "Delhi", target_var = "PM2.5", interactive = FALSE)

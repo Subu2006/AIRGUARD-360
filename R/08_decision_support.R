@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/08_decision_support.R
 # Purpose: Environmental Vulnerability Index (EVI) & Simulated GRAP Decision Support
-# INT232 Syllabus Mapping: Unit II (Data Frames), Unit III (Conditionals & Functions)
+# Architecture: Environmental Decision Support, EVI Prioritization & GRAP Advisory Engine
 # ==============================================================================
 
 suppressPackageStartupMessages({

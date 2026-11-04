@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/06_text_mining.R
 # Purpose: Text Mining of Environmental Health Advisories, Corpus Processing & Word Clouds
-# INT232 Syllabus Mapping: Unit V (Text Mining, String Functions), Unit VI (Word Cloud), Practical 11
+# Architecture: Statutory Environmental Advisory NLP, Corpus Processing & Word Clouds
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -45,13 +45,13 @@ mine_environmental_text <- function(corpus_df = NULL) {
     corpus_df <- generate_advisory_corpus()
   }
   
-  # Base R string cleaning & regex (Unit IV & V)
+  # Base R string cleaning & regex sanitization
   clean_text <- gsub("[[:punct:]]", " ", corpus_df$Text)
   clean_text <- gsub("[[:digit:]]", " ", clean_text)
   clean_text <- tolower(clean_text)
   corpus_df$Text_Clean <- clean_text
   
-  # Unit V: Tokenization and Stopword Removal using tidytext
+  # Tokenization and Stopword Removal using tidytext
   data("stop_words", package = "tidytext")
   
   # Domain-specific custom stopwords
@@ -72,7 +72,7 @@ mine_environmental_text <- function(corpus_df = NULL) {
   return(word_freqs)
 }
 
-#' Render Syllabus-Mandated Environmental Word Cloud (Unit VI & Practical 11)
+#' Render Environmental Advisory Word Cloud
 #' 
 #' @param word_freqs Word frequency data frame
 #' @param max_words Maximum words to render

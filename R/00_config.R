@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/00_config.R
 # Purpose: Central configuration, standard thresholds, color palettes, and themes
-# INT232 Syllabus Mapping: Unit I (Environment), Unit VI (Visualization Themes)
+# Architecture: System Configuration, Statutory Thresholds & Color Themes
 # ==============================================================================
 
 # Ensure standard options

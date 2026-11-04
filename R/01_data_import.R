@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/01_data_import.R
 # Purpose: Robust Data Ingestion and SQLite Embedded Database Setup
-# INT232 Syllabus Mapping: Unit III (Data input/output: CSV, SQL with R), Practical 7
+# Architecture: Data Ingestion & Relational SQLite Database Initialization
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -34,7 +34,7 @@ initialize_data_pipeline <- function(raw_dir = "data/raw", db_path = "data/airgu
     file.exists(dim_poll_file)
   )
   
-  # 2. Ingest CSVs using Base R read.csv (Unit III requirement)
+  # 2. Ingest CSVs using Base R read.csv
   message("   Loading fact table: station_day.csv...")
   df_station_day <- read.csv(station_day_file, stringsAsFactors = FALSE, na.strings = c("", "NA", "NULL"))
   
@@ -63,7 +63,7 @@ initialize_data_pipeline <- function(raw_dir = "data/raw", db_path = "data/airgu
   message(sprintf("   Ingested %d station records across %d monitoring stations.", 
                   nrow(df_station_day), nrow(df_stations)))
   
-  # 3. Create / Connect to Embedded SQLite Database (INT232 Unit III: SQL with R)
+  # 3. Create / Connect to Embedded SQLite Database (RSQLite Engine)
   message(sprintf("   Initializing SQLite Database at: %s", db_path))
   con <- dbConnect(RSQLite::SQLite(), db_path)
   

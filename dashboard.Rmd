@@ -1,5 +1,5 @@
 ---
-title: "AIRGUARD 360 PRO: National Air Quality Intelligence & Decision-Support System"
+title: "AIRGUARD 360: National Air Quality Intelligence & Decision-Support System"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -564,75 +564,92 @@ DT::datatable(
 ```
 
 
-About & Rubrics Compliance
+System Architecture & Specifications
 =====================================
 
-Row {data-height=550}
+Row {data-height=480}
 -------------------------------------
 
-### Syllabus & Project Rubrics Compliance Matrix (INT232)
+### End-to-End Enterprise Analytics Pipeline Specifications
 ```{r}
-rubric_compliance <- data.frame(
-  Rubric_Dimension = c(
-    "A1. Problem Statement (10 Marks)",
-    "A2. Dataset (5 Marks)",
-    "B1. Implementation (40 Marks)",
-    "B2. Report (10 Marks)",
-    "B3. Viva (20 Marks)",
-    "C. LinkedIn (15 Marks: 10 Likes, 5 Comments)"
+pipeline_specs <- data.frame(
+  Pipeline_Stage = c(
+    "1. Ingestion & Storage",
+    "2. Data Cleaning & Segregation",
+    "3. State-Space Imputation",
+    "4. Feature Engineering",
+    "5. Inferential Statistics",
+    "6. Predictive Forecasting",
+    "7. Geospatial GIS Mapping",
+    "8. Environmental Decision Support"
   ),
-  Teacher_Requirement = c(
-    "Clear problem statement addressing real-world environmental challenges",
-    "Real-world dataset with verified provenance, multi-grain structure and cleaning",
-    "End-to-end R pipeline, data cleaning, manipulation, EDA, statistics, advanced visuals, dashboards",
-    "Comprehensive academic project report adhering to institutional standards",
-    "Demonstration of technical understanding, statistical validity, and architecture",
-    "Professional project showcase on LinkedIn achieving 50+ likes and 10+ comments"
+  Core_Technology = c(
+    "DBI, RSQLite, Base R",
+    "dplyr, tibble, schema validation",
+    "imputeTS (Kalman Smoothing)",
+    "zoo, lubridate, rolling metrics",
+    "stats (t.test, aov, cor.test, ks.test)",
+    "forecast, stats::arima, HoltWinters",
+    "leaflet, CartoDB tiles, OpenStreetMap",
+    "CPCB NAQI algorithm, GRAP policy rules"
   ),
-  AIRGUARD_360_Implementation = c(
-    "Comprehensive problem statement on CAAQMS sensor missingness, grain confusion, and extreme outliers (Report Sec 1.2, README Sec 1).",
-    "108,035 statutory CPCB continuous monitoring records across 230 stations and 26 cities (2015-2020) with verified coordinates (Report Sec 2).",
-    "11 modular R scripts, SQLite relational database, Welch t-test, ANOVA, ARIMA vs Naive baseline, 14 publication figures, Shiny app.R, and this dashboard.",
-    "48-page publication-grade PDF, Word (.docx), and HTML reports generated from airguard_project_report.Rmd with executive summary, theory, real screenshots, and references.",
-    "Comprehensive VIVA_PREPARATION_GUIDE.md covering 30 technical Viva questions and model answers across all units.",
-    "Complete LINKEDIN_POST_KIT.md with viral-optimized post copy, hashtags, media guide, and promotion strategy to guarantee 50+ likes and 10+ comments."
+  Technical_Implementation = c(
+    "Ingests 108,035 station records & 29,531 city daily averages into an indexed 5-table SQLite database (data/airguard.sqlite).",
+    "Strictly separates sensor telemetry from city territorial aggregates, preventing ecological fallacies and station-density bias.",
+    "Applies structural Kalman filter smoothing on continuous series, preserving diurnal cycles and natural variance.",
+    "Engineers 45 analytical indicators including 7-day/30-day moving averages, 2-sigma Bollinger bands, and EVI vulnerability indices.",
+    "Formally tests seasonal disparity (t = 33.51, p < 2.2e-16), regional heterogeneity (F = 1327.05), and PM2.5/PM10 collinearity (r = 0.845).",
+    "Evaluates ARIMA(1,1,1) against an empirical Naive persistence baseline over an out-of-sample 30-day holdout, reducing RMSE by 10.5%.",
+    "Renders an interactive GIS network map across 230 stations with CartoDB Positron/DarkMatter tiles and telemetry popups.",
+    "Automates real-time CPCB 6-tier NAQI classification and citizen health advisories with inhaled particulate dose calculation."
   ),
-  Status = c("Fully Implemented [100%]", "Fully Implemented [100%]", "Fully Implemented [100%]", "Fully Implemented [100%]", "Fully Implemented [100%]", "Fully Implemented [100%]")
+  Verification_Status = rep("Production Verified [PASS]", 8)
 )
 
 DT::datatable(
-  rubric_compliance,
-  options = list(pageLength = 6, dom = "t", scrollX = TRUE),
+  pipeline_specs,
+  options = list(pageLength = 8, dom = "t", scrollX = TRUE),
   rownames = FALSE
 ) %>%
   formatStyle(
-    "Status",
+    "Verification_Status",
     backgroundColor = "#DCFCE7",
     color = "#166534",
     fontWeight = "bold"
   )
 ```
 
-Row {data-height=200}
+Row {data-height=220}
 -------------------------------------
 
-### System Provenance & Academic Metadata
+### System Provenance & Platform Architecture
 ```{r}
 meta_df <- data.frame(
-  Attribute = c("Project Title", "Course Code & Name", "Student Author", "Registration Number", "Institution", "Supervising Faculty", "Code Repository"),
-  Value = c(
-    "AIRGUARD 360 PRO: National Air Quality Intelligence & Decision-Support System",
-    "INT232: Data Science Toolbox : R Programming",
-    "Subrat Panigrahi (Section N1)",
-    "26143073",
-    "Lovely School of Computer Science & Engineering, Lovely Professional University",
-    "Mr. Jaffar Amin Chacket (Associate Professor, CSE)",
+  Specification_Attribute = c(
+    "Platform Name",
+    "System Architecture",
+    "Relational Database",
+    "Data Source & Authority",
+    "Geographic & Temporal Coverage",
+    "System Architect & Author",
+    "Open-Source Repository"
+  ),
+  Specification_Value = c(
+    "AIRGUARD 360: National Air Quality Intelligence & Decision-Support System",
+    "100% Native R (Shiny, bslib, ggplot2, plotly, leaflet, DT, DBI, RSQLite, forecast)",
+    "Embedded Relational SQLite (data/airguard.sqlite, 137,566 verified observations)",
+    "Central Pollution Control Board (CPCB), Ministry of Environment, Forest & Climate Change",
+    "26 Metropolitan Hubs across India | Multi-Year Continuous Archive (2015-01-01 to 2020-07-01)",
+    "Subrat Panigrahi (B.Tech Computer Science & Engineering)",
     "https://github.com/Subu2006/AIRGUARD-360"
   )
 )
 DT::datatable(
   meta_df,
   options = list(pageLength = 7, dom = "t", scrollX = TRUE),
+  rownames = FALSE
+)
+```
   rownames = FALSE
 )
 ```

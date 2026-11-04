@@ -2,8 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/07_visualizations.R
 # Purpose: Comprehensive Basic & Advanced Visualizations (ggplot2 & Plotly)
-# INT232 Syllabus Mapping: Unit VI (Basic: Scatter, Line, Bar, Pie/Donut;
-#                                  Advanced: Heat Map, Bollinger Bands; Plotly)
+# Architecture: Visualization Suite (ggplot2, Plotly & Leaflet GIS)
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -293,7 +292,7 @@ plot_aqi_donut <- function(df, target_city = "Delhi") {
 }
 
 # ------------------------------------------------------------------------------
-# 5. Advanced Visualizations: Correlation Heat Map (Unit VI)
+# 5. Advanced Visualizations: Correlation Heat Map
 # ------------------------------------------------------------------------------
 plot_correlation_heatmap <- function(cor_matrix, interactive = TRUE) {
   if (is.null(cor_matrix) || nrow(cor_matrix) == 0) {
@@ -325,7 +324,7 @@ plot_correlation_heatmap <- function(cor_matrix, interactive = TRUE) {
 }
 
 # ------------------------------------------------------------------------------
-# 6. Advanced Visualizations: Bollinger Bands on Air Quality Volatility (Unit VI)
+# 6. Advanced Visualizations: Bollinger Bands on Air Quality Volatility
 # ------------------------------------------------------------------------------
 plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5", 
                                  start_date = NULL, end_date = NULL, interactive = TRUE) {
@@ -401,7 +400,7 @@ plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5"
 }
 
 # ------------------------------------------------------------------------------
-# 7. Advanced Visualizations: Predictive Forecast Ribbon Plot (CO5)
+# 7. Advanced Visualizations: Predictive Forecast Ribbon Plot
 # ------------------------------------------------------------------------------
 plot_forecast_chart <- function(forecast_res, interactive = TRUE) {
   if (is.null(forecast_res)) {

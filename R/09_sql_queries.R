@@ -1,8 +1,8 @@
 # ==============================================================================
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/09_sql_queries.R
-# Purpose: Direct SQL Queries against Embedded SQLite Database
-# INT232 Syllabus Mapping: Unit III (SQL with R), Practical 7 (Perform different SQL queries)
+# Purpose: Direct Relational SQL Queries against Embedded SQLite Database
+# Architecture: Relational SQL Query Library (DBI/RSQLite)
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -10,11 +10,11 @@ suppressPackageStartupMessages({
   library(RSQLite)
 })
 
-#' Execute Syllabus-Mandated SQL Queries on Air Quality Database (Practical 7)
+#' Execute Relational SQL Queries on Air Quality Database
 #' 
 #' @param db_path Path to SQLite file
 #' @return A list containing query strings and resulting data frames
-run_syllabus_sql_queries <- function(db_path = "data/airguard.sqlite") {
+run_relational_sql_queries <- function(db_path = "data/airguard.sqlite") {
   message(">> [AIRGUARD 360] Executing Relational SQL Queries via DBI/RSQLite...")
   
   con <- dbConnect(RSQLite::SQLite(), db_path)
@@ -86,3 +86,6 @@ run_syllabus_sql_queries <- function(db_path = "data/airguard.sqlite") {
     pollutant_metadata = list(sql = q3, data = res3)
   ))
 }
+
+# Backward compatibility alias
+run_syllabus_sql_queries <- run_relational_sql_queries

@@ -76,7 +76,7 @@ AIRGUARD 360 was engineered as a flagship capstone application for **INT232: Dat
 
 ```text
 AIRGUARD 360/
-├── app.R                          # Enterprise interactive Shiny web application (8 modules)
+├── app.R                          # Enterprise interactive Shiny web application (7 operational modules)
 ├── run_pipeline.R                 # Master end-to-end execution pipeline script
 ├── generate_figures.R             # High-resolution (300 DPI) publication figure engine
 ├── dashboard.Rmd                  # Standalone interactive flexdashboard source

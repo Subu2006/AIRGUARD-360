@@ -2,7 +2,7 @@
 # AIRGUARD 360: Environmental Intelligence & Decision-Support System
 # File: R/05_forecasting.R
 # Purpose: Predictive Analytics using Base R Time Series (ARIMA, Holt-Winters & Naive Baseline)
-# INT232 Syllabus Mapping: CO5 (Predictive Analytics Fundamentally), Unit IV (Math/Stats)
+# Architecture: Predictive Atmospheric Time-Series Modeling & Benchmarked Holdout Validation
 # ==============================================================================
 
 suppressPackageStartupMessages({
