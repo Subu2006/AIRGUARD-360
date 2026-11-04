@@ -10,16 +10,16 @@ message("          AIRGUARD 360 : MASTER PIPELINE EXECUTION                ")
 message("==================================================================")
 
 # Source all modular scripts in strict architectural sequence
-source("R/00_config.R")
-source("R/01_data_import.R")
-source("R/02_data_cleaning.R")
-source("R/03_feature_engineering.R")
-source("R/04_statistics.R")
-source("R/05_forecasting.R")
-source("R/06_text_mining.R")
-source("R/07_visualizations.R")
-source("R/08_decision_support.R")
-source("R/09_sql_queries.R")
+source("R/config.R")
+source("R/data_engine.R")
+source("R/analytics_engine.R")
+source("R/visualization_engine.R")
+
+
+
+
+
+
 
 # Ensure required directory structure exists
 dir.create("data/processed", showWarnings = FALSE, recursive = TRUE)

@@ -1,8 +1,9 @@
 # ==============================================================================
-# AIRGUARD 360: Environmental Intelligence & Decision-Support System
-# File: R/07_visualizations.R
-# Purpose: Comprehensive Basic & Advanced Visualizations (ggplot2 & Plotly)
-# Architecture: Visualization Suite (ggplot2, Plotly & Leaflet GIS)
+# AIRGUARD 360: National Air Quality Intelligence & Decision-Support System
+# File: R/visualization_engine.R
+# Architecture: Visualization Suite (ggplot2, Plotly, Leaflet GIS) & Decision Engines
+# Author: Subrat Panigrahi (B.Tech Computer Science & Engineering)
+# Open-Source Repository: https://github.com/Subu2006/AIRGUARD-360
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -10,12 +11,18 @@ suppressPackageStartupMessages({
   library(plotly)
   library(dplyr)
   library(scales)
+  library(leaflet)
+  library(zoo)
 })
 
-# Source theme if not already in environment
+# Source theme and configuration if not in environment
 if (!exists("theme_airguard")) {
-  source("R/00_config.R")
+  source("R/config.R")
 }
+
+# ==============================================================================
+# SECTION 1: CORE VISUALIZATION HELPERS & INTERACTIVE WIDGETS
+# ==============================================================================
 
 #' Helper to generate an elegant Plotly empty-state placeholder
 plot_empty_message <- function(message_text = "No observations available for the selected filters.") {
@@ -90,9 +97,11 @@ plot_aqi_gauge <- function(aqi_val, city_name = "Selected City") {
     )
 }
 
-# ------------------------------------------------------------------------------
-# 1. Basic Visualizations: Temporal Trend Line Chart
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# SECTION 2: TEMPORAL TRENDS, RANKINGS & STOICHIOMETRY
+# ==============================================================================
+
+#' Temporal Trend Line Chart with Moving Average and Statutory Thresholds
 plot_temporal_trend <- function(df, target_city = "Delhi", target_var = "PM2.5", 
                                 start_date = NULL, end_date = NULL, interactive = TRUE) {
   sub_df <- df %>% filter(as.character(City) == as.character(target_city))
@@ -108,7 +117,6 @@ plot_temporal_trend <- function(df, target_city = "Delhi", target_var = "PM2.5",
     }
   }
   
-  # Ensure target variable has at least some valid non-NA values
   valid_vals <- sub_df[[target_var]][!is.na(sub_df[[target_var]])]
   if (length(valid_vals) == 0) {
     if (interactive) {
@@ -118,10 +126,8 @@ plot_temporal_trend <- function(df, target_city = "Delhi", target_var = "PM2.5",
     }
   }
   
-  # Determine 7-day Moving Average column safely
   ma_col <- paste0(target_var, "_MA7")
   if (!(ma_col %in% colnames(sub_df))) {
-    # Compute on the fly if not present in dataframe
     sub_df[[ma_col]] <- round(stats::filter(sub_df[[target_var]], rep(1/7, 7), sides = 1), 1)
   }
   
@@ -148,12 +154,9 @@ plot_temporal_trend <- function(df, target_city = "Delhi", target_var = "PM2.5",
   }
 }
 
-# ------------------------------------------------------------------------------
-# 2. Basic Visualizations: Bar Chart of Location Rankings (Hotspots / EVI)
-# ------------------------------------------------------------------------------
+#' Bar Chart of Location Rankings (Hotspots / EVI)
 plot_city_rankings <- function(df, target_var = "AQI", top_n = 10, interactive = TRUE) {
   if (target_var == "EVI") {
-    # If EVI is requested, pull directly from EVI table or compute
     if (file.exists("outputs/tables/hotspot_vulnerability_ranking.csv")) {
       hotspots <- read.csv("outputs/tables/hotspot_vulnerability_ranking.csv", stringsAsFactors = FALSE)
       ranking_df <- hotspots %>%
@@ -201,9 +204,7 @@ plot_city_rankings <- function(df, target_var = "AQI", top_n = 10, interactive =
   }
 }
 
-# ------------------------------------------------------------------------------
-# 3. Basic Visualizations: Stoichiometric Scatter Plot
-# ------------------------------------------------------------------------------
+#' Stoichiometric Scatter Plot (PM2.5 vs PM10)
 plot_pollutant_scatter <- function(df, target_city = "Delhi", var_x = "PM10", var_y = "PM2.5", 
                                    start_date = NULL, end_date = NULL, interactive = TRUE) {
   sub_df <- df %>% 
@@ -227,7 +228,6 @@ plot_pollutant_scatter <- function(df, target_city = "Delhi", var_x = "PM10", va
     }
   }
   
-  # Compute correlation for informative subtitle
   r_val <- round(cor(sub_df[[var_x]], sub_df[[var_y]], use = "complete.obs"), 3)
   
   p <- ggplot(sub_df, aes(x = .data[[var_x]], y = .data[[var_y]])) +
@@ -240,7 +240,6 @@ plot_pollutant_scatter <- function(df, target_city = "Delhi", var_x = "PM10", va
     ) +
     theme_airguard()
   
-  # Add regression line only if enough points exist
   if (nrow(sub_df) >= 3) {
     p <- p + geom_smooth(method = "lm", color = "#1E293B", linetype = "solid", se = TRUE, linewidth = 0.8)
   }
@@ -252,9 +251,7 @@ plot_pollutant_scatter <- function(df, target_city = "Delhi", var_x = "PM10", va
   }
 }
 
-# ------------------------------------------------------------------------------
-# 4. Basic Visualizations: Donut Chart of CPCB AQI Buckets
-# ------------------------------------------------------------------------------
+#' Donut Chart of CPCB AQI Category Distribution
 plot_aqi_donut <- function(df, target_city = "Delhi") {
   sub_df <- df %>% 
     filter(as.character(City) == as.character(target_city), !is.na(AQI_Bucket))
@@ -267,10 +264,9 @@ plot_aqi_donut <- function(df, target_city = "Delhi") {
     count(AQI_Bucket) %>%
     mutate(
       Percentage = round((n / sum(n)) * 100, 1),
-      Color = if (exists("AQI_COLOR_PALETTE")) AQI_COLOR_PALETTE[as.character(AQI_Bucket)] else "#1F77B4"
+      Color = if (exists("AQI_COLOR_PALETTE")) AQI_COLOR_PALETTE[as.character(AQI_Bucket)] else "#0284C7"
     )
   
-  # Fallback color if any mapping missing
   cat_counts$Color[is.na(cat_counts$Color)] <- "#94A3B8"
   
   plot_ly(
@@ -291,9 +287,11 @@ plot_aqi_donut <- function(df, target_city = "Delhi") {
     )
 }
 
-# ------------------------------------------------------------------------------
-# 5. Advanced Visualizations: Correlation Heat Map
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# SECTION 3: ADVANCED VISUALIZATIONS (CORRELATION, BOLLINGER, FORECAST)
+# ==============================================================================
+
+#' Correlation Heat Map
 plot_correlation_heatmap <- function(cor_matrix, interactive = TRUE) {
   if (is.null(cor_matrix) || nrow(cor_matrix) == 0) {
     if (interactive) return(plot_empty_message("Correlation matrix unavailable."))
@@ -323,9 +321,7 @@ plot_correlation_heatmap <- function(cor_matrix, interactive = TRUE) {
   }
 }
 
-# ------------------------------------------------------------------------------
-# 6. Advanced Visualizations: Bollinger Bands on Air Quality Volatility
-# ------------------------------------------------------------------------------
+#' Bollinger Bands on Air Quality Volatility
 plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5", 
                                  start_date = NULL, end_date = NULL, interactive = TRUE) {
   sub_df <- df %>% filter(as.character(City) == as.character(target_city))
@@ -335,18 +331,15 @@ plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5"
   
   if (!(target_var %in% colnames(sub_df))) target_var <- "PM2.5"
   
-  # Check if precomputed Bollinger columns exist, otherwise compute dynamically
   bb_upper_col <- paste0(target_var, "_BB_Upper")
   bb_lower_col <- paste0(target_var, "_BB_Lower")
   bb_mid_col   <- paste0(target_var, "_BB_Mid")
   spike_col    <- paste0(target_var, "_Bollinger_Spike")
   
   if (!(bb_upper_col %in% colnames(sub_df))) {
-    # Dynamically calculate 20-day MA and SD
     sub_df <- sub_df %>% arrange(Date)
     raw_vals <- sub_df[[target_var]]
     mid <- as.numeric(stats::filter(raw_vals, rep(1/20, 20), sides = 1))
-    # Rolling SD
     n <- length(raw_vals)
     r_sd <- rep(NA_real_, n)
     for (i in 20:n) {
@@ -360,7 +353,6 @@ plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5"
     sub_df[[spike_col]]    <- ifelse(!is.na(raw_vals) & !is.na(sub_df[[bb_upper_col]]) & raw_vals > sub_df[[bb_upper_col]], 1L, 0L)
   }
   
-  # Filter to rows with valid data
   sub_df <- sub_df %>% filter(!is.na(.data[[target_var]]), !is.na(.data[[bb_upper_col]]))
   
   if (nrow(sub_df) == 0) {
@@ -372,17 +364,11 @@ plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5"
   }
   
   p <- ggplot(sub_df, aes(x = Date)) +
-    # Volatility Envelope Ribbon
     geom_ribbon(aes(ymin = .data[[bb_lower_col]], ymax = .data[[bb_upper_col]]), fill = "#93C5FD", alpha = 0.3) +
-    # 20-Day Moving Average
     geom_line(aes(y = .data[[bb_mid_col]]), color = "#2563EB", linewidth = 0.9, linetype = "solid") +
-    # Upper Band (+2 SD)
     geom_line(aes(y = .data[[bb_upper_col]]), color = "#EF4444", linewidth = 0.6, linetype = "dashed") +
-    # Lower Band (-2 SD)
     geom_line(aes(y = .data[[bb_lower_col]]), color = "#10B981", linewidth = 0.6, linetype = "dashed") +
-    # Actual Pollutant Line
     geom_line(aes(y = .data[[target_var]]), color = "#1E293B", linewidth = 0.5, alpha = 0.6) +
-    # Highlight Volatility Spikes
     geom_point(data = sub_df %>% filter(.data[[spike_col]] == 1),
                aes(y = .data[[target_var]]), color = "#DC2626", size = 2) +
     labs(
@@ -399,9 +385,7 @@ plot_bollinger_bands <- function(df, target_city = "Delhi", target_var = "PM2.5"
   }
 }
 
-# ------------------------------------------------------------------------------
-# 7. Advanced Visualizations: Predictive Forecast Ribbon Plot
-# ------------------------------------------------------------------------------
+#' Predictive Forecast Ribbon Plot
 plot_forecast_chart <- function(forecast_res, interactive = TRUE) {
   if (is.null(forecast_res)) {
     return(plot_empty_message("Predictive model output unavailable."))
@@ -417,13 +401,10 @@ plot_forecast_chart <- function(forecast_res, interactive = TRUE) {
   model   <- forecast_res$metrics$Model_Selected
   
   p <- ggplot(fc_data, aes(x = Date, y = Forecast)) +
-    # 95% Interval Ribbon
     geom_ribbon(data = fc_data %>% filter(Type == "Forecast"),
                 aes(ymin = Lower_95, ymax = Upper_95), fill = "#CBD5E1", alpha = 0.6) +
-    # 80% Interval Ribbon
     geom_ribbon(data = fc_data %>% filter(Type == "Forecast"),
                 aes(ymin = Lower_80, ymax = Upper_80), fill = "#93C5FD", alpha = 0.6) +
-    # Main Trajectory Line
     geom_line(aes(color = Type), linewidth = 1.0) +
     scale_color_manual(values = c("Observed" = "#1E293B", "Forecast" = "#2563EB")) +
     labs(
@@ -440,9 +421,11 @@ plot_forecast_chart <- function(forecast_res, interactive = TRUE) {
   }
 }
 
-# ------------------------------------------------------------------------------
-# 8. Geographic Visualizations: National Monitoring Network Map
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# SECTION 4: GEOSPATIAL INTELLIGENCE & LEAFLET GIS MAPPING
+# ==============================================================================
+
+#' Static / WebGL CAAQMS Station Map
 plot_station_map <- function(station_data, interactive = TRUE) {
   if (is.null(station_data) || nrow(station_data) == 0) {
     if (interactive) return(plot_empty_message("Station geographic coordinates unavailable."))
@@ -496,7 +479,7 @@ plot_station_map <- function(station_data, interactive = TRUE) {
   }
 }
 
-#' Interactive Leaflet CAAQMS Monitoring Network Map
+#' Interactive Leaflet CAAQMS Monitoring Network Map with Multi-Layer Tiles & NAQI Halos
 plot_leaflet_station_map <- function(station_data) {
   if (is.null(station_data) || nrow(station_data) == 0) return(NULL)
   
@@ -544,9 +527,11 @@ plot_leaflet_station_map <- function(station_data) {
   return(m)
 }
 
-# ------------------------------------------------------------------------------
-# 9. Advanced Visualizations: Multi-City Dual Trajectory Comparison Studio
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# SECTION 5: MULTI-CITY COMPARISON & STOICHIOMETRIC PROFILES
+# ==============================================================================
+
+#' Multi-City Dual Trajectory Comparison Studio
 plot_city_comparison <- function(df, city_a = "Delhi", city_b = "Bengaluru", 
                                  target_var = "PM2.5", start_date = NULL, end_date = NULL, 
                                  interactive = TRUE) {
@@ -561,7 +546,6 @@ plot_city_comparison <- function(df, city_a = "Delhi", city_b = "Bengaluru",
     return(ggplot() + annotate("text", x = 1, y = 1, label = "No data") + theme_void())
   }
   
-  # Calculate 7-day rolling average per city
   sub_df <- sub_df %>%
     group_by(City) %>%
     arrange(Date) %>%
@@ -595,9 +579,7 @@ plot_city_comparison <- function(df, city_a = "Delhi", city_b = "Bengaluru",
   }
 }
 
-# ------------------------------------------------------------------------------
-# 10. Advanced Visualizations: Multi-Pollutant Benchmark Radar / Profile
-# ------------------------------------------------------------------------------
+#' Multi-Pollutant Benchmark Profile (% of NAAQS Standards)
 plot_pollutant_profile_bar <- function(df, city_a = "Delhi", city_b = "Bengaluru", interactive = TRUE) {
   criteria_polls <- c("PM2.5", "PM10", "NO2", "SO2", "CO", "O3")
   
@@ -636,9 +618,7 @@ plot_pollutant_profile_bar <- function(df, city_a = "Delhi", city_b = "Bengaluru
   }
 }
 
-# ------------------------------------------------------------------------------
-# 11. Policy Intervention & Scenario Projection Visualizer
-# ------------------------------------------------------------------------------
+#' Policy Intervention & Scenario Projection Visualizer
 plot_scenario_projection <- function(df, target_city = "Delhi", 
                                      reduction_pct = 25, 
                                      target_var = "PM2.5", 
@@ -646,7 +626,7 @@ plot_scenario_projection <- function(df, target_city = "Delhi",
   sub_df <- df %>%
     filter(as.character(City) == as.character(target_city), !is.na(.data[[target_var]])) %>%
     arrange(Date) %>%
-    tail(180) # Past 6 months of observed baseline
+    tail(180)
   
   if (nrow(sub_df) == 0) {
     if (interactive) return(plot_empty_message("Insufficient baseline data for scenario projection."))
@@ -681,4 +661,162 @@ plot_scenario_projection <- function(df, target_city = "Delhi",
   }
 }
 
+# ==============================================================================
+# SECTION 6: DECISION SUPPORT, EVI RANKING, DOSE & SIMULATION MODELS
+# ==============================================================================
 
+#' Compute Environmental Vulnerability Index (EVI) for Municipal Hotspot Prioritization
+compute_hotspot_priority_index <- function(df) {
+  message(">> [DECISION ENGINE] Computing Hotspot Vulnerability Index...")
+  
+  evi_df <- df %>%
+    group_by(City, State) %>%
+    summarise(
+      Total_Days        = n(),
+      Mean_AQI          = round(mean(AQI, na.rm = TRUE), 1),
+      Max_PM2.5         = round(max(PM2.5, na.rm = TRUE), 1),
+      Pct_Severe_Days   = round(mean(AQI_Bucket %in% c("Very Poor", "Severe"), na.rm = TRUE) * 100, 1),
+      PM2.5_Exceed_Rate = round(mean(PM2.5_Exceeded, na.rm = TRUE) * 100, 1),
+      .groups = "drop"
+    ) %>%
+    filter(Total_Days >= 30, !is.na(Mean_AQI)) %>%
+    mutate(
+      AQI_Span  = max(Mean_AQI) - min(Mean_AQI),
+      AQI_Norm  = ifelse(AQI_Span > 0, (Mean_AQI - min(Mean_AQI)) / AQI_Span, 0.5),
+      EVI_Score = round((0.4 * (AQI_Norm * 100)) + (0.4 * Pct_Severe_Days) + (0.2 * PM2.5_Exceed_Rate), 1),
+      Priority_Tier = case_when(
+        EVI_Score >= 60 ~ "Tier 1: Critical Emergency (Immediate Red Alert)",
+        EVI_Score >= 35 ~ "Tier 2: High Vulnerability (Active Mitigation)",
+        TRUE            ~ "Tier 3: Moderate / Baseline Surveillance"
+      )
+    ) %>%
+    select(-AQI_Span, -AQI_Norm) %>%
+    arrange(desc(EVI_Score)) %>%
+    mutate(Rank = row_number()) %>%
+    select(Rank, City, State, Total_Days, Mean_AQI, Max_PM2.5, Pct_Severe_Days, PM2.5_Exceed_Rate, EVI_Score, Priority_Tier)
+  
+  return(evi_df)
+}
+
+#' Generate Graded Response Action Plan (GRAP) Environmental Advisory Simulation
+generate_environmental_advisory <- function(aqi, pm25 = NA) {
+  if (length(aqi) == 0 || is.na(aqi) || is.nan(aqi)) {
+    return(list(
+      Stage = "Stage 0: Insufficient Data",
+      Severity = "No Data Available for Horizon",
+      Color = "#94A3B8",
+      Authority_Action = "Maintain standard automated sensor calibration and check station diagnostics.",
+      Citizen_Advisory = "Check local ambient continuous monitors before outdoor physical activities."
+    ))
+  }
+  
+  aqi_val <- as.numeric(aqi[1])
+  
+  if (aqi_val <= 100) {
+    list(
+      Stage = "Stage 0: Baseline Surveillance",
+      Severity = "Good to Satisfactory (AQI <= 100)",
+      Color = "#00B050",
+      Authority_Action = "Enforce routine mechanized road sweeping and strict green cover maintenance.",
+      Citizen_Advisory = "Air quality is favorable. Normal outdoor exercise and recreational activities are encouraged."
+    )
+  } else if (aqi_val <= 200) {
+    list(
+      Stage = "Stage 1: Moderate Alert",
+      Severity = "Moderate (AQI 101 - 200)",
+      Color = "#EAB308",
+      Authority_Action = "Strictly penalize open biomass and municipal solid waste burning; inspect construction sites.",
+      Citizen_Advisory = "Sensitive individuals with chronic respiratory ailments should limit intense prolonged outdoor exertion."
+    )
+  } else if (aqi_val <= 300) {
+    list(
+      Stage = "Stage 2: Poor Air Quality (GRAP Stage I)",
+      Severity = "Poor (AQI 201 - 300)",
+      Color = "#F97316",
+      Authority_Action = "Deploy anti-smog water sprinklers; enforce diesel genset bans; intensify traffic bottleneck decongestion.",
+      Citizen_Advisory = "Reduce prolonged morning outdoor jogging. Wear particulate-filtering N95 respirators near traffic arteries."
+    )
+  } else if (aqi_val <= 400) {
+    list(
+      Stage = "Stage 3: Very Poor Air Quality (GRAP Stage II)",
+      Severity = "Very Poor (AQI 301 - 400)",
+      Color = "#EF4444",
+      Authority_Action = "Halt private construction earthworks; prohibit non-essential commercial diesel truck entry.",
+      Citizen_Advisory = "Avoid outdoor strenuous activity. Use indoor HEPA air purifiers; keep windows closed during thermal inversions."
+    )
+  } else {
+    list(
+      Stage = "Stage 4: Severe+ Emergency (GRAP Stage III & IV)",
+      Severity = "Severe+ Emergency (AQI > 400)",
+      Color = "#7030A0",
+      Authority_Action = "Implement odd-even vehicular rationing; mandate 50% work-from-home across public/private sectors; close primary schools.",
+      Citizen_Advisory = "Critical Health Hazard. Children, elderly, and those with cardiovascular or lung disease must stay indoors."
+    )
+  }
+}
+
+#' Calculate Inhaled Particulate Dose & Cigarette Equivalents
+calculate_inhaled_dose <- function(pm25, age_cohort = "Healthy Adult", activity_level = "Light Walking", hours = 2.0) {
+  # Minute ventilation rates (VE in m3/hr)
+  ve_table <- list(
+    "Child (5-12 yrs)" = c(Resting = 0.35, Walking = 0.80, Strenuous = 1.60),
+    "Healthy Adult"    = c(Resting = 0.45, Walking = 1.10, Strenuous = 2.40),
+    "Elderly (65+)"    = c(Resting = 0.40, Walking = 0.90, Strenuous = 1.80),
+    "Asthmatic / Sensitive" = c(Resting = 0.45, Walking = 0.95, Strenuous = 1.90)
+  )
+  
+  cohort_key <- if (age_cohort %in% names(ve_table)) age_cohort else "Healthy Adult"
+  act_key <- if (activity_level %in% c("Resting / Sedentary", "Resting")) "Resting"
+             else if (activity_level %in% c("Light Walking", "Walking")) "Walking"
+             else "Strenuous"
+             
+  ve <- ve_table[[cohort_key]][[act_key]]
+  
+  dose_ug <- round(pm25 * ve * hours, 1)
+  # Berkeley Earth empirical equivalence: ~480 ug of PM2.5 ≈ 1 cigarette smoked
+  cigs <- round(dose_ug / 480, 2)
+  
+  ppe_recommendation <- if (pm25 <= 60) "Standard / None required"
+                        else if (pm25 <= 120) "Surgical mask recommended for sensitive cohorts"
+                        else if (pm25 <= 250) "N95 / FFP2 particulate respirator strongly advised"
+                        else "N99 / P100 respirator mandatory; avoid all outdoor exertion"
+                        
+  list(
+    pm25               = pm25,
+    ventilation_rate   = ve,
+    hours              = hours,
+    inhaled_dose_ug    = dose_ug,
+    cigarette_equiv    = cigs,
+    ppe_recommendation = ppe_recommendation
+  )
+}
+
+#' Simulate Urban Policy Interventions on Air Quality
+simulate_policy_intervention <- function(baseline_aqi, baseline_pm25, 
+                                         ev_abate = 20, dust_abate = 25, 
+                                         biomass_abate = 40, industry_abate = 15) {
+  # CPCB Source Apportionment Empirical Weights for PM2.5 in Indian Metros
+  w_ev       <- 0.28  # Vehicular emissions
+  w_dust     <- 0.22  # Construction & road dust
+  w_biomass  <- 0.25  # Seasonal biomass & stubble
+  w_industry <- 0.25  # Industrial stacks & power plants
+  
+  total_reduction_pct <- (ev_abate * w_ev) + 
+                         (dust_abate * w_dust) + 
+                         (biomass_abate * w_biomass) + 
+                         (industry_abate * w_industry)
+  
+  projected_pm25 <- round(pmax(10, baseline_pm25 * (1 - (total_reduction_pct / 100))), 1)
+  projected_aqi  <- round(pmax(25, baseline_aqi * (1 - (total_reduction_pct * 0.85 / 100))), 1)
+  
+  clean_days_gained <- round((total_reduction_pct / 100) * 115)
+  avoided_hospitalizations <- round((baseline_pm25 - projected_pm25) * 14.5)
+  
+  list(
+    reduction_pct            = round(total_reduction_pct, 1),
+    projected_pm25           = projected_pm25,
+    projected_aqi            = projected_aqi,
+    clean_days_gained        = clean_days_gained,
+    avoided_hospitalizations = avoided_hospitalizations
+  )
+}

@@ -330,7 +330,7 @@ Environmental monitoring sensors operate in hostile outdoor environments subject
 # 3. EDA PROCESS & DATA ENGINEERING
 
 ## 3.1 Systematic Data Cleaning & Physical Sanity Validations
-The cleaning engine (`R/02_data_cleaning.R`) applies a four-stage pipeline:
+The cleaning engine (`R/data_engine.R`) applies a four-stage pipeline:
 1. **Type Coercion:** All twelve atmospheric pollutant fields are coerced to strict double-precision floating point (`numeric`), and dates are formatted as ISO 8601 (`YYYY-MM-DD`).
 2. **Physical Boundary Checks:** Ambient air pollutant concentrations cannot physically take negative values. Calibration drift occasionally causes sensors to log negative numbers (e.g., $-1.2\ \mu\text{g/m}^3$). All negative values are systematically replaced with `NA`.
 3. **Categorical Factor Encoding:** CPCB AQI buckets are encoded as ordered factors:
@@ -338,7 +338,7 @@ $$\text{Good} < \text{Satisfactory} < \text{Moderate} < \text{Poor} < \text{Very
 4. **Outlier Auditing:** Observations where $\text{AQI} > 500$ are flagged with an indicator variable (`AQI_Outlier_Flag = 1L`) rather than silently dropped, preserving empirical records of acute industrial disaster episodes.
 
 ## 3.2 Feature Engineering & Climatological Season Classification
-The feature engineering engine (`R/03_feature_engineering.R`) derives 45 features across all 29,531 city-daily records:
+The feature engineering engine (`R/data_engine.R`) derives 45 features across all 29,531 city-daily records:
 - **Temporal Encodings:** Year, Month, Day, Day of Week, Weekend Flag (`Weekday` vs `Weekend`).
 - **Climatological Seasons (Indian Meteorological Department definitions):**
   - **Winter:** December, January, February
@@ -848,17 +848,17 @@ syl_df <- data.frame(
     "Welch t-test, ANOVA with Tukey HSD, Pearson cor.test, KS normality test"
   ),
   AIRGUARD_360_Implementation = c(
-    "R/00_config.R, DESCRIPTION, renv-ready dependency manifest",
-    "R/02_data_cleaning.R (factors), R/04_statistics.R (cor matrix)",
-    "R/01_data_import.R, R/09_sql_queries.R (DBI/RSQLite)",
-    "R/03_feature_engineering.R (dates), R/04_statistics.R (lapply)",
-    "R/02_data_cleaning.R, R/03_feature_engineering.R",
-    "R/06_text_mining.R (tidytext tokenization, custom stopwords)",
-    "R/07_visualizations.R (fig1, fig2, fig3, fig8, donut)",
-    "R/07_visualizations.R (fig4 heatmap, fig5 Bollinger, fig7 map)",
+    "R/config.R, DESCRIPTION, renv-ready dependency manifest",
+    "R/data_engine.R (factor encoding), R/analytics_engine.R (cor matrix)",
+    "R/data_engine.R (relational DBI/RSQLite star schema & queries)",
+    "R/data_engine.R (temporal features), R/analytics_engine.R (lapply)",
+    "R/data_engine.R (cleaning & feature engineering pipeline)",
+    "R/analytics_engine.R (tidytext tokenization, custom stopwords)",
+    "R/visualization_engine.R (fig1, fig2, fig3, fig8, donut)",
+    "R/visualization_engine.R (fig4 heatmap, fig5 Bollinger, Leaflet GIS map)",
     "dashboard.Rmd (flexdashboard) and app.R (interactive Shiny app)",
-    "R/05_forecasting.R (chronological holdout validation, RMSE/MAE)",
-    "R/04_statistics.R (run_hypothesis_tests() returning p-values)"
+    "R/analytics_engine.R (chronological holdout validation, RMSE/MAE)",
+    "R/analytics_engine.R (run_hypothesis_tests() returning p-values)"
   ),
   Verification_Method = c(
     "Package installation check and Rscript session info",

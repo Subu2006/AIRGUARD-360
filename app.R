@@ -22,12 +22,11 @@ suppressPackageStartupMessages({
   library(shinycssloaders)
 })
 
-# Source internal modules
-source("R/00_config.R")
-source("R/05_forecasting.R")
-source("R/07_visualizations.R")
-source("R/08_decision_support.R")
-source("R/09_sql_queries.R")
+# Source consolidated architectural engines
+source("R/config.R")
+source("R/data_engine.R")
+source("R/analytics_engine.R")
+source("R/visualization_engine.R")
 
 # ------------------------------------------------------------------------------
 # 1. Load Preprocessed Datasets & Verify Artifacts (Auto-Bootstrap)
@@ -221,13 +220,11 @@ custom_css <- "
 # ------------------------------------------------------------------------------
 ui <- navbarPage(
   title = div(
-    style = "display: flex; align-items: center;",
-    tags$span(style = "color: #38BDF8; font-weight: 900; letter-spacing: -0.02em; font-size: 1.25rem;", "AIRGUARD"),
-    tags$span(style = "color: #FFFFFF; font-weight: 300; font-size: 1.25rem; margin-left: 3px;", "360"),
+    style = "display: flex; align-items: center; gap: 8px;",
+    tags$i(class = "fa-solid fa-shield-halved", style = "color: #38BDF8; font-size: 1.3rem;"),
     tags$span(
-      class = "badge rounded-pill ms-2",
-      style = "background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #7DD3FC; font-size: 0.70rem; font-weight: 600; padding: 4px 10px;",
-      "Environmental Intelligence"
+      tags$b(style = "color: #38BDF8; font-weight: 800; letter-spacing: -0.02em; font-size: 1.3rem;", "AIRGUARD"),
+      tags$span(style = "color: #FFFFFF; font-weight: 400; font-size: 1.3rem; margin-left: 2px;", "360")
     )
   ),
   theme = airguard_theme,

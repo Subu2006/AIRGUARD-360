@@ -4,11 +4,11 @@ library(dplyr)
 
 root <- local({
   d <- normalizePath(getwd())
-  while (!file.exists(file.path(d, "R", "00_config.R")) && dirname(d) != d) d <- dirname(d)
+  while (!file.exists(file.path(d, "R", "config.R")) && dirname(d) != d) d <- dirname(d)
   d
 })
 
-for (f in c("R/00_config.R", "R/05b_forecast_validation.R", "R/08_decision_support.R")) {
+for (f in c("R/config.R", "R/analytics_engine.R", "R/visualization_engine.R")) {
   source(file.path(root, f))
 }
 

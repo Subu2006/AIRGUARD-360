@@ -24,9 +24,9 @@ suppressPackageStartupMessages({
 })
 
 # Load core modules and configuration
-source("R/00_config.R")
-source("R/07_visualizations.R")
-source("R/08_decision_support.R")
+source("R/config.R")
+source("R/analytics_engine.R")
+source("R/visualization_engine.R")
 
 # Load preprocessed datasets and summary tables
 df_city_enriched <- if (file.exists("data/processed/airguard_enriched.rds")) {

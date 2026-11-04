@@ -1,8 +1,9 @@
 # ==============================================================================
-# AIRGUARD 360: Environmental Intelligence & Decision-Support System
-# File: R/00_config.R
-# Purpose: Central configuration, standard thresholds, color palettes, and themes
-# Architecture: System Configuration, Statutory Thresholds & Color Themes
+# AIRGUARD 360: National Air Quality Intelligence & Decision-Support System
+# File: R/config.R
+# Architecture: Core Configuration, Statutory Thresholds & Color System
+# Author: Subrat Panigrahi (B.Tech Computer Science & Engineering)
+# Open-Source Repository: https://github.com/Subu2006/AIRGUARD-360
 # ==============================================================================
 
 # Ensure standard options
@@ -12,18 +13,18 @@ options(stringsAsFactors = FALSE, scipen = 999)
 # 1. Project Metadata and Provenance Declarations
 # ------------------------------------------------------------------------------
 PROJECT_NAME        <- "AIRGUARD 360"
-PROJECT_SUBTITLE    <- "An Interactive Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System"
-DATA_PROVENANCE     <- "Central Pollution Control Board (CPCB), India (Distributed via Kaggle historical archive)"
+PROJECT_SUBTITLE    <- "National Air Quality Intelligence, Multi-Pollutant Analytics & Environmental Decision-Support System"
+DATA_PROVENANCE     <- "Central Pollution Control Board (CPCB), Ministry of Environment, Forest and Climate Change (MoEF&CC), Government of India"
 HISTORICAL_COVERAGE <- "2015-01-01 to 2020-07-01"
-SYSTEM_DISCLAIMER   <- "Historical Retrospective System: Developed for academic research, data exploration, and simulated decision support under INT232. Does not provide live telemetry, statutory GRAP directives, or medical counsel."
+SYSTEM_DISCLAIMER   <- "Historical Retrospective System: Engineered for environmental analytics, data exploration, and simulated decision support. Historical CAAQMS dataset (2015-2020); does not provide real-time telemetry or medical counsel."
 
 # Standard Color Palette for UI and Plots
 THEME_COLORS <- list(
-  primary   = "#1F77B4",
+  primary   = "#0284C7",
   secondary = "#10B981",
   success   = "#059669",
-  warning   = "#F59E0B",
-  danger    = "#EF4444",
+  warning   = "#D97706",
+  danger    = "#DC2626",
   dark      = "#0F172A",
   light     = "#F8FAFC",
   muted     = "#94A3B8"
@@ -31,29 +32,29 @@ THEME_COLORS <- list(
 
 # ------------------------------------------------------------------------------
 # 2. Official CPCB National Ambient Air Quality Standards (NAAQS) - 24-hr Limits
-# Source: Central Pollution Control Board, Gazette of India, 2009
+# Source: Central Pollution Control Board, Gazette of India, Notification 2009
 # ------------------------------------------------------------------------------
 NAAQS_LIMITS <- list(
-  PM2.5   = 60,   # ug/m3 (24-hr)
-  PM10    = 100,  # ug/m3 (24-hr)
-  NO2     = 80,   # ug/m3 (24-hr)
-  SO2     = 80,   # ug/m3 (24-hr)
-  CO      = 2.0,  # mg/m3 (8-hr short-term screening comparator)
-  O3      = 100,  # ug/m3 (8-hr short-term screening comparator)
-  NH3     = 400,  # ug/m3 (24-hr)
-  Benzene = 5.0   # ug/m3 (Annual)
+  PM2.5   = 60,   # ug/m3 (24-hr standard)
+  PM10    = 100,  # ug/m3 (24-hr standard)
+  NO2     = 80,   # ug/m3 (24-hr standard)
+  SO2     = 80,   # ug/m3 (24-hr standard)
+  CO      = 2.0,  # mg/m3 (8-hr short-term screening standard)
+  O3      = 100,  # ug/m3 (8-hr short-term screening standard)
+  NH3     = 400,  # ug/m3 (24-hr standard)
+  Benzene = 5.0   # ug/m3 (Annual standard)
 )
 
 # ------------------------------------------------------------------------------
-# 3. Official CPCB National Air Quality Index (NAQI) Breakpoints & Colors
-# Source: CPCB National Air Quality Index Guidelines, 2014-2015
+# 3. Official CPCB National Air Quality Index (NAQI) Breakpoints & Hex Colors
+# Source: CPCB National Air Quality Index Guidelines (2014-2015)
 # ------------------------------------------------------------------------------
 AQI_CATEGORIES <- data.frame(
-  Bucket = c("Good", "Satisfactory", "Moderate", "Poor", "Very Poor", "Severe"),
-  Min_AQI = c(0, 51, 101, 201, 301, 401),
-  Max_AQI = c(50, 100, 200, 300, 400, 500),
+  Bucket        = c("Good", "Satisfactory", "Moderate", "Poor", "Very Poor", "Severe"),
+  Min_AQI       = c(0, 51, 101, 201, 301, 401),
+  Max_AQI       = c(50, 100, 200, 300, 400, 500),
   Severity_Rank = 1:6,
-  Color_Hex = c("#00B050", "#92D050", "#EAB308", "#F97316", "#EF4444", "#7030A0"),
+  Color_Hex     = c("#00B050", "#92D050", "#EAB308", "#F97316", "#EF4444", "#7030A0"),
   stringsAsFactors = FALSE
 )
 
@@ -99,13 +100,32 @@ theme_airguard <- function(base_size = 12, is_dark = FALSE) {
         axis.text         = ggplot2::element_text(color = "#475569"),
         axis.title        = ggplot2::element_text(color = "#0F172A", face = "bold"),
         panel.grid.major  = ggplot2::element_line(color = "#F1F5F9", linewidth = 0.5),
-        panel.grid.minor  = ggplot2::element_blank(),
-        plot.title        = ggplot2::element_text(face = "bold", size = base_size * 1.2, color = "#0F172A"),
-        plot.subtitle     = ggplot2::element_text(size = base_size * 0.9, color = "#64748B", margin = ggplot2::margin(b = 10)),
+        panel.grid.minor  = ggplot2::element_line(color = "#F8FAFC", linewidth = 0.25),
+        plot.title        = ggplot2::element_text(face = "bold", size = base_size * 1.25, color = "#0F172A"),
+        plot.subtitle     = ggplot2::element_text(size = base_size * 0.95, color = "#64748B", margin = ggplot2::margin(b = 10)),
         legend.position   = "bottom",
-        legend.background = ggplot2::element_blank(),
+        legend.background = ggplot2::element_rect(fill = "#FFFFFF", color = NA),
         legend.text       = ggplot2::element_text(color = "#334155"),
         strip.text        = ggplot2::element_text(color = "#0F172A", face = "bold")
       )
   }
+}
+
+# ------------------------------------------------------------------------------
+# 5. Core Helper Functions
+# ------------------------------------------------------------------------------
+get_aqi_bucket <- function(aqi_val) {
+  if (is.na(aqi_val) || is.nan(aqi_val)) return("Unknown")
+  if (aqi_val <= 50)  return("Good")
+  if (aqi_val <= 100) return("Satisfactory")
+  if (aqi_val <= 200) return("Moderate")
+  if (aqi_val <= 300) return("Poor")
+  if (aqi_val <= 400) return("Very Poor")
+  return("Severe")
+}
+
+format_metric <- function(val, digits = 1, unit = "") {
+  if (is.na(val) || is.null(val) || is.nan(val)) return("N/A")
+  formatted <- format(round(as.numeric(val), digits), nsmall = digits, big.mark = ",")
+  if (nchar(unit) > 0) paste(formatted, unit) else formatted
 }

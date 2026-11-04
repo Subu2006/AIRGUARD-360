@@ -13,8 +13,8 @@ suppressPackageStartupMessages({
   library(RColorBrewer)
 })
 
-source("R/00_config.R")
-source("R/07_visualizations.R")
+source("R/config.R")
+source("R/visualization_engine.R")
 
 dir.create("outputs/figures", showWarnings = FALSE, recursive = TRUE)
 
