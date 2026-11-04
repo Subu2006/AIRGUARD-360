@@ -20,6 +20,7 @@ suppressPackageStartupMessages({
   library(DBI)
   library(RSQLite)
   library(zoo)
+  library(leaflet)
 })
 
 # Load core modules and configuration
@@ -333,10 +334,10 @@ Geographic Intelligence & Hotspots
 Row {data-height=520}
 -------------------------------------
 
-### National Continuous Ambient Air Quality Monitoring Network (230 CAAQMS Stations)
+### National Continuous Ambient Air Quality Monitoring Network (230 CAAQMS Stations - Leaflet GIS)
 ```{r}
 if (!is.null(station_geo)) {
-  plot_station_map(station_geo, interactive = TRUE)
+  plot_leaflet_station_map(station_geo)
 } else {
   plot_empty_message("Station coordinates not available.")
 }

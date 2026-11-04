@@ -497,6 +497,54 @@ plot_station_map <- function(station_data, interactive = TRUE) {
   }
 }
 
+#' Interactive Leaflet CAAQMS Monitoring Network Map
+plot_leaflet_station_map <- function(station_data) {
+  if (is.null(station_data) || nrow(station_data) == 0) return(NULL)
+  
+  geo_df <- station_data %>%
+    filter(!is.na(Latitude), !is.na(Longitude), 
+           Latitude >= 6, Latitude <= 38, Longitude >= 68, Longitude <= 98)
+           
+  if (nrow(geo_df) == 0) return(NULL)
+  
+  pal <- colorNumeric(
+    palette = c("#10B981", "#EAB308", "#F97316", "#EF4444", "#7E22CE"),
+    domain = c(0, 500)
+  )
+  
+  m <- leaflet(geo_df) %>%
+    addProviderTiles("CartoDB.Positron", group = "Positron Light") %>%
+    addProviderTiles("CartoDB.DarkMatter", group = "Dark OLED") %>%
+    addTiles(group = "OpenStreetMap") %>%
+    addCircleMarkers(
+      lng = ~Longitude, lat = ~Latitude,
+      radius = ~scales::rescale(pmin(450, pmax(40, Mean_AQI)), to = c(5, 13)),
+      color = ~pal(pmin(500, pmax(0, Mean_AQI))),
+      fillColor = ~pal(pmin(500, pmax(0, Mean_AQI))),
+      fillOpacity = 0.85,
+      weight = 1.5,
+      popup = ~paste0(
+        "<div style='font-family:Segoe UI, sans-serif; min-width: 190px;'>",
+        "<h6 style='margin:0 0 4px 0; font-weight:700; color:#0F172A;'>", StationName, "</h6>",
+        "<div style='font-size:11px; color:#64748B; margin-bottom:6px;'>", City, ", ", State, "</div>",
+        "<table style='width:100%; font-size:12px; border-collapse:collapse;'>",
+        "<tr style='border-bottom:1px solid #E2E8F0;'><td><b>Mean AQI:</b></td><td style='text-align:right; font-weight:bold;'>", round(Mean_AQI, 1), "</td></tr>",
+        "<tr style='border-bottom:1px solid #E2E8F0;'><td><b>Peak AQI:</b></td><td style='text-align:right; color:#DC2626; font-weight:bold;'>", round(Peak_AQI, 1), "</td></tr>",
+        "<tr style='border-bottom:1px solid #E2E8F0;'><td><b>Mean PM2.5:</b></td><td style='text-align:right;'>", round(Mean_PM25, 1), " µg/m³</td></tr>",
+        "<tr><td><b>Observations:</b></td><td style='text-align:right;'>", Total_Observations, "</td></tr>",
+        "</table>",
+        "</div>"
+      ),
+      label = ~paste0(StationName, " (AQI: ", round(Mean_AQI, 1), ")")
+    ) %>%
+    addLayersControl(
+      baseGroups = c("Positron Light", "Dark OLED", "OpenStreetMap"),
+      options = layersControlOptions(collapsed = FALSE)
+    )
+    
+  return(m)
+}
+
 # ------------------------------------------------------------------------------
 # 9. Advanced Visualizations: Multi-City Dual Trajectory Comparison Studio
 # ------------------------------------------------------------------------------

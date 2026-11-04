@@ -5,7 +5,7 @@
 [![Shiny](https://img.shields.io/badge/Shiny-Interactive%20Enterprise%20App-brightgreen.svg)](https://shiny.posit.co/)
 [![Database](https://img.shields.io/badge/Database-SQLite%20Embedded-lightgrey.svg)]()
 [![Tests](https://img.shields.io/badge/Tests-8%2F8%20Stages%20Passing%20(100%25)-success.svg)]()
-[![Report](https://img.shields.io/badge/Report-48%20Pages%20Word%2FPDF-purple.svg)]()
+[![Report](https://img.shields.io/badge/Report-52%20Pages%20Word%2FPDF-purple.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black.svg)](https://github.com/Subu2006/AIRGUARD-360)
 
@@ -48,8 +48,8 @@ AIRGUARD 360 was engineered as a flagship capstone application for **INT232: Dat
 * Native Base R `stats::arima(1, 1, 1)` and `stats::HoltWinters` models evaluated via chronological out-of-sample holdout validation against a persistent **Naive Reference Baseline**.
 * For Delhi $PM_{2.5}$, ARIMA achieves an out-of-sample RMSE of **$11.37\ \mu\text{g/m}^3$** versus **$12.70\ \mu\text{g/m}^3$** for the Naive baseline (a **10.5% error reduction** over persistence).
 
-### 🗺️ 5. National Geospatial Intelligence & Hotspot Ranking
-* Interactive nationwide scattergeo bubble map across all 230 continuous monitoring stations with statutory coordinates, mean AQI, and peak concentrations.
+### 🗺️ 5. National Geospatial Intelligence & Leaflet GIS Hotspot Ranking
+* Interactive nationwide Leaflet GIS mapping across all 230 continuous monitoring stations with multiple base layers (Positron Light, Dark OLED, StreetMap), color-coded statutory NAQI halos, and interactive station telemetry popups.
 * Objective **Environmental Vulnerability Index (EVI)** classifying cities into three operational priority tiers (Tier 1 Critical Emergency, Tier 2 High Vulnerability, Tier 3 Moderate/Baseline).
 
 ### 🗄️ 6. Strict Relational Grain Separation & Embedded SQLite
@@ -83,7 +83,6 @@ AIRGUARD 360/
 ├── dashboard.html                 # Compiled standalone interactive HTML dashboard
 ├── install_dependencies.R         # Automated CRAN dependency installer & verification
 ├── DESCRIPTION                    # Standard R package & project dependency manifest
-├── session_info.txt               # Full R sessionInfo() runtime environment log
 ├── AIRGUARD360.Rproj              # RStudio project configuration file
 ├── LICENSE                        # MIT Open Source License
 ├── README.md                      # Comprehensive project documentation

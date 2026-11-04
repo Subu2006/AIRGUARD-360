@@ -18,6 +18,9 @@ suppressPackageStartupMessages({
   library(lubridate)
   library(wordcloud)
   library(RColorBrewer)
+  library(leaflet)
+  library(shinyWidgets)
+  library(shinycssloaders)
 })
 
 # Source internal modules
@@ -230,7 +233,7 @@ ui <- navbarPage(
   # TAB 1: EXECUTIVE COMMAND CENTER
   # ----------------------------------------------------------------------------
   tabPanel(
-    "📊 Executive Command Center",
+    title = tagList(icon("chart-line"), "Executive Overview"),
     div(
       class = "system-banner",
       fluidRow(
@@ -291,7 +294,7 @@ ui <- navbarPage(
             width = 8,
             card(
               card_header("Continuous Air Quality Trajectory & 7-Day Moving Average Smoother", class = "bg-light font-weight-bold"),
-              plotlyOutput("plot_trajectory", height = "470px"),
+              plotlyOutput("plot_trajectory", height = "470px") %>% withSpinner(type = 6, color = "#0284C7"),
               card_footer(class = "text-muted small",
                           "Grey curve: Raw daily sensor readings | Blue curve: 7-day moving average | Red dashed line: Statutory CPCB NAAQS threshold.")
             )
@@ -300,12 +303,12 @@ ui <- navbarPage(
             width = 4,
             card(
               card_header("Statutory NAQI Calibrated Gauge", class = "bg-light font-weight-bold"),
-              plotlyOutput("plot_aqi_gauge", height = "215px")
+              plotlyOutput("plot_aqi_gauge", height = "215px") %>% withSpinner(type = 6, color = "#0284C7")
             ),
             card(
               class = "mt-2",
               card_header("NAQI Severity Distribution (CPCB)", class = "bg-light font-weight-bold"),
-              plotlyOutput("plot_category_donut", height = "215px"),
+              plotlyOutput("plot_category_donut", height = "215px") %>% withSpinner(type = 6, color = "#0284C7"),
               card_footer(class = "text-muted small",
                           "Proportion of monitored days categorized across 6 statutory NAQI tiers.")
             )
@@ -319,7 +322,7 @@ ui <- navbarPage(
   # TAB 2: HEAD-TO-HEAD MULTI-CITY COMPARISON STUDIO
   # ----------------------------------------------------------------------------
   tabPanel(
-    "⚔️ Multi-City Comparison Studio",
+    title = tagList(icon("code-compare"), "Comparison Studio"),
     div(
       class = "system-banner",
       h4("Inter-Metropolitan Air Quality Benchmark & Head-to-Head Comparison Studio"),
@@ -350,7 +353,7 @@ ui <- navbarPage(
         card(
           class = "mt-3",
           card_header("Comparative Trajectory Overlay (Synchronized Time Axis)", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_comparison_trajectory", height = "400px"),
+          plotlyOutput("plot_comparison_trajectory", height = "400px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Directly overlays 7-day moving averages for both cities, revealing seasonal co-variation and regional disparity.")
         )
@@ -360,7 +363,7 @@ ui <- navbarPage(
         card(
           class = "mt-3",
           card_header("Criteria Multi-Pollutant Burden Profile (% of NAAQS Limit)", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_comparison_profile", height = "400px"),
+          plotlyOutput("plot_comparison_profile", height = "400px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Red dashed line represents 100% of the statutory 24-hr NAAQS limit. Values breaching 100% signify severe non-compliance.")
         )
@@ -372,7 +375,7 @@ ui <- navbarPage(
   # TAB 3: POLICY INTERVENTION & WHAT-IF SCENARIO SIMULATOR
   # ----------------------------------------------------------------------------
   tabPanel(
-    "🧪 Policy Scenario Simulator",
+    title = tagList(icon("sliders"), "Policy Simulator"),
     div(
       class = "system-banner",
       h4("Environmental Decision Support & Policy Intervention Simulator ('What-If' Analysis)"),
@@ -416,7 +419,7 @@ ui <- navbarPage(
         card(
           class = "mt-3",
           card_header("Intervention Impact Projection: Historical Baseline vs. Simulated Policy", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_simulation_trajectory", height = "420px"),
+          plotlyOutput("plot_simulation_trajectory", height = "420px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Green shaded region illustrates the cumulative atmospheric exposure burden successfully avoided through the selected mitigation suite.")
         )
@@ -428,7 +431,7 @@ ui <- navbarPage(
   # TAB 4: PERSONAL HEALTH ADVISORY & EXPOSURE DOSE CALCULATOR
   # ----------------------------------------------------------------------------
   tabPanel(
-    "🏥 Health & Exposure Calculator",
+    title = tagList(icon("heart-pulse"), "Health Exposure"),
     div(
       class = "system-banner",
       h4("Personal Environmental Exposure & Inhaled Particulate Dose Calculator"),
@@ -465,7 +468,7 @@ ui <- navbarPage(
   # TAB 5: GEOGRAPHIC INTELLIGENCE & HOTSPOTS
   # ----------------------------------------------------------------------------
   tabPanel(
-    "🗺️ Geospatial Intelligence",
+    title = tagList(icon("map-location-dot"), "Geospatial Radar"),
     div(
       class = "system-banner",
       h4("National CAAQMS Station Geospatial Network & Municipal Vulnerability Index (EVI)"),
@@ -475,17 +478,17 @@ ui <- navbarPage(
       column(
         width = 6,
         card(
-          card_header("National CAAQMS Station Network (India Geospatial Coordinates)", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_station_geo_map", height = "440px"),
+          card_header("National CAAQMS Station Network (Interactive Leaflet GIS Map)", class = "bg-light font-weight-bold"),
+          leafletOutput("leaflet_station_map", height = "450px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
-                      "Statutory geographic coordinates of active CAAQMS monitoring stations across India. Marker size and color denote station pollution intensity.")
+                      "Interactive OpenStreetMap/CartoDB tiles. Click any monitoring pin to view live station telemetry, AQI severity, and vulnerability tier.")
         )
       ),
       column(
         width = 6,
         card(
           card_header("Top Municipal Hotspots Ranked by Environmental Vulnerability Index (EVI)", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_hotspots_bar", height = "440px"),
+          plotlyOutput("plot_hotspots_bar", height = "440px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "EVI combines scaled mean AQI (40%), severe days percentage (40%), and PM2.5 exceedance rate (20%).")
         )
@@ -509,7 +512,7 @@ ui <- navbarPage(
   # TAB 6: PREDICTIVE FORECASTING & VOLATILITY
   # ----------------------------------------------------------------------------
   tabPanel(
-    "📈 Forecasting & Volatility",
+    title = tagList(icon("chart-area"), "Forecasting & Volatility"),
     div(
       class = "system-banner",
       h4("Predictive Time-Series Forecasting (CO5) & Atmospheric Volatility Modeling"),
@@ -531,7 +534,7 @@ ui <- navbarPage(
             ),
             class = "bg-light font-weight-bold"
           ),
-          plotlyOutput("plot_predictive_fc", height = "380px"),
+          plotlyOutput("plot_predictive_fc", height = "380px") %>% withSpinner(type = 6, color = "#0284C7"),
           uiOutput("fc_metrics_ui"),
           card_footer(class = "text-muted small",
                       "Chronological holdout split: 80% & 95% confidence intervals benchmarked against a persistent Naive reference.")
@@ -548,7 +551,7 @@ ui <- navbarPage(
             ),
             class = "bg-light font-weight-bold"
           ),
-          plotlyOutput("plot_bollinger", height = "380px"),
+          plotlyOutput("plot_bollinger", height = "380px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Red dots highlight acute episodic volatility spikes breaching the upper 20-day 2-sigma boundary.")
         )
@@ -560,7 +563,7 @@ ui <- navbarPage(
   # TAB 7: MULTI-POLLUTANT DYNAMICS & TEXT MINING
   # ----------------------------------------------------------------------------
   tabPanel(
-    "🔍 Dynamics & Text Mining",
+    title = tagList(icon("network-wired"), "Pollutant Dynamics"),
     div(
       class = "system-banner",
       h4("Multi-Pollutant Correlation Matrices, Particulate Stoichiometry & Environmental Text Mining"),
@@ -571,7 +574,7 @@ ui <- navbarPage(
         width = 6,
         card(
           card_header("Inter-Pollutant Pearson Correlation Matrix (Unit II Matrices)", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_heatmap", height = "390px"),
+          plotlyOutput("plot_heatmap", height = "390px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Pairwise-complete Pearson correlations across 8 criteria atmospheric parameters.")
         )
@@ -580,7 +583,7 @@ ui <- navbarPage(
         width = 6,
         card(
           card_header("Particulate Stoichiometry: PM2.5 vs PM10 Linear Dynamics", class = "bg-light font-weight-bold"),
-          plotlyOutput("plot_scatter", height = "390px"),
+          plotlyOutput("plot_scatter", height = "390px") %>% withSpinner(type = 6, color = "#0284C7"),
           card_footer(class = "text-muted small",
                       "Fitted Ordinary Least Squares (OLS) regression line quantifying shared combustion and dust resuspension ratios.")
         )
@@ -627,7 +630,7 @@ ui <- navbarPage(
   # TAB 8: ABOUT, SYLLABUS MAPPING & EXPORT
   # ----------------------------------------------------------------------------
   tabPanel(
-    "🎓 About & Academic Alignment",
+    title = tagList(icon("graduation-cap"), "Academic Center"),
     div(
       class = "system-banner",
       h4("AIRGUARD 360 : Project Architecture, Academic Alignment & Data Export"),
@@ -1075,6 +1078,14 @@ server <- function(input, output, session) {
   # ----------------------------------------------------------------------------
   # Tab 5: Geographic Intelligence
   # ----------------------------------------------------------------------------
+  output$leaflet_station_map <- renderLeaflet({
+    if (!is.null(station_geo_df) && nrow(station_geo_df) > 0) {
+      plot_leaflet_station_map(station_geo_df)
+    } else {
+      NULL
+    }
+  })
+  
   output$plot_station_geo_map <- renderPlotly({
     if (!is.null(station_geo_df) && nrow(station_geo_df) > 0) {
       plot_station_map(station_geo_df, interactive = TRUE)

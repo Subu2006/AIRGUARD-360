@@ -17,8 +17,9 @@ if (compareVersion(curr_r_version, min_r_version) < 0) {
 
 required_packages <- c(
   "bslib", "DBI", "dplyr", "DT", "flexdashboard", "forecast", "ggplot2", 
-  "knitr", "lubridate", "plotly", "RColorBrewer", "rmarkdown", "RSQLite", 
-  "scales", "shiny", "tidyr", "tidytext", "wordcloud"
+  "knitr", "leaflet", "lubridate", "plotly", "RColorBrewer", "rmarkdown", 
+  "RSQLite", "scales", "shiny", "shinycssloaders", "shinyjs", "shinyWidgets", 
+  "tidyr", "tidytext", "wordcloud"
 )
 
 installed_pkgs <- rownames(installed.packages())
